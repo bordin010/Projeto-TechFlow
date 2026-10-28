@@ -1,0 +1,547 @@
+<!doctype html>
+
+<html lang="pt-BR">
+    <head>
+        <meta charset="utf-8" />
+        <meta content="width=device-width, initial-scale=1.0" name="viewport" />
+        <meta content="TechFlow — Gestão de Ordens de Serviço" name="description" />
+        <title>Painel administrativo | TechFlow</title>
+        <link href="../assets/globais.css" rel="stylesheet" />
+        <link href="style.css" rel="stylesheet" />
+    </head>
+    <body>
+        <div class="estrutura">
+            <!-- Menu lateral do administrador -->
+            <aside class="menu-lateral">
+                <a class="marca" href="../tela-principal/index.html">
+                    <img alt="Símbolo TechFlow" src="../img/LOGO.png" width="120" />
+                </a>
+                <div class="perfil-lateral">
+                    <span class="avatar">AD</span>
+                    <div>
+                        <strong>Administrador</strong>
+                        <small>Gestão de serviços</small>
+                    </div>
+                </div>
+                <p class="nome-menu">PRINCIPAL</p>
+                <nav aria-label="Menu do administrador">
+                    <a class="selecionado" href="#inicio">
+                        <svg
+                            aria-hidden="true"
+                            fill="none"
+                            stroke="currentColor"
+                            stroke-linecap="round"
+                            stroke-linejoin="round"
+                            stroke-width="1.6"
+                            viewbox="0 0 24 24"
+                        >
+                            <rect height="7" rx="1" width="7" x="3" y="3"></rect>
+                            <rect height="7" rx="1" width="7" x="14" y="3"></rect>
+                            <rect height="7" rx="1" width="7" x="3" y="14"></rect>
+                            <rect height="7" rx="1" width="7" x="14" y="14"></rect>
+                        </svg>
+                        Visão geral
+                    </a>
+                    <a href="#ordens">
+                        <svg
+                            aria-hidden="true"
+                            fill="none"
+                            stroke="currentColor"
+                            stroke-linecap="round"
+                            stroke-linejoin="round"
+                            stroke-width="1.6"
+                            viewbox="0 0 24 24"
+                        >
+                            <rect height="18" rx="2" width="14" x="5" y="3"></rect>
+                            <path d="M9 8h6M9 12h6M9 16h4"></path>
+                        </svg>
+                        Ordens de Serviço
+                    </a>
+                    <a href="#tecnicos">
+                        <svg
+                            aria-hidden="true"
+                            fill="none"
+                            stroke="currentColor"
+                            stroke-linecap="round"
+                            stroke-linejoin="round"
+                            stroke-width="1.6"
+                            viewbox="0 0 24 24"
+                        >
+                            <circle cx="12" cy="8" r="4"></circle>
+                            <path d="M4 21v-2a8 8 0 0 1 16 0v2"></path>
+                        </svg>
+                        Técnicos
+                    </a>
+                    <a href="#clientes">
+                        <svg
+                            aria-hidden="true"
+                            fill="none"
+                            stroke="currentColor"
+                            stroke-linecap="round"
+                            stroke-linejoin="round"
+                            stroke-width="1.6"
+                            viewbox="0 0 24 24"
+                        >
+                            <circle cx="12" cy="8" r="4"></circle>
+                            <path d="M4 21v-2a8 8 0 0 1 16 0v2"></path>
+                        </svg>
+                        Clientes
+                    </a>
+                    <a href="#equipamentos">
+                        <svg
+                            aria-hidden="true"
+                            fill="none"
+                            stroke="currentColor"
+                            stroke-linecap="round"
+                            stroke-linejoin="round"
+                            stroke-width="1.6"
+                            viewbox="0 0 24 24"
+                        >
+                            <rect height="13" rx="2" width="18" x="3" y="4"></rect>
+                            <path d="M8 21h8M12 17v4"></path>
+                        </svg>
+                        Equipamentos
+                    </a>
+                </nav>
+                <div class="nota-menu">
+                    <span class="sobretitulo">Um fluxo mais simples</span>
+                    <p>Sua equipe conectada, do chamado à solução.</p>
+                    <a href="../tela-tecnico/index.html">Área do técnico ↗</a>
+                </div>
+                <a class="sair" data-sair="" href="../tela-login/index.html">
+                    <svg
+                        aria-hidden="true"
+                        fill="none"
+                        stroke="currentColor"
+                        stroke-linecap="round"
+                        stroke-linejoin="round"
+                        stroke-width="1.6"
+                        viewbox="0 0 24 24"
+                    >
+                        <path d="M9 4H4v16h5M8 12h13m-5-5 5 5-5 5"></path>
+                    </svg>
+                    Sair do sistema
+                </a>
+            </aside>
+            <main class="conteudo" id="inicio">
+                <header class="topo-painel">
+                    <div>
+                        <p class="sobretitulo">PAINEL ADMINISTRATIVO</p>
+                        <h1>
+                            Olá, Administrador
+                            <span class="ponto">.</span>
+                        </h1>
+                        <p class="texto-apoio">Vamos organizar os atendimentos de hoje?</p>
+                    </div>
+                    <a class="botao" href="../techflow-solicitacao/index.html">+ Nova OS</a>
+                </header>
+                <!-- Indicadores e visão geral do sistema -->
+                <section aria-label="Resumo das ordens" class="resumos">
+                    <article class="resumo">
+                        <span class="icone-resumo">
+                            <svg
+                                aria-hidden="true"
+                                fill="none"
+                                stroke="currentColor"
+                                stroke-linecap="round"
+                                stroke-linejoin="round"
+                                stroke-width="1.6"
+                                viewbox="0 0 24 24"
+                            >
+                                <rect height="18" rx="2" width="14" x="5" y="3"></rect>
+                                <path d="M9 8h6M9 12h6M9 16h4"></path>
+                            </svg>
+                        </span>
+                        <div>
+                            <p>Total de OS</p>
+                            <strong id="total">3</strong>
+                            <small>Atendimentos registrados</small>
+                        </div>
+                    </article>
+                    <article class="resumo">
+                        <span class="icone-resumo">
+                            <svg
+                                aria-hidden="true"
+                                fill="none"
+                                stroke="currentColor"
+                                stroke-linecap="round"
+                                stroke-linejoin="round"
+                                stroke-width="1.6"
+                                viewbox="0 0 24 24"
+                            >
+                                <circle cx="12" cy="12" r="9"></circle>
+                                <path d="M12 7v5l3 2"></path>
+                            </svg>
+                        </span>
+                        <div>
+                            <p>Pendentes</p>
+                            <strong id="pendentes">1</strong>
+                            <small>Aguardando início</small>
+                        </div>
+                    </article>
+                    <article class="resumo">
+                        <span class="icone-resumo">
+                            <svg
+                                aria-hidden="true"
+                                fill="none"
+                                stroke="currentColor"
+                                stroke-linecap="round"
+                                stroke-linejoin="round"
+                                stroke-width="1.6"
+                                viewbox="0 0 24 24"
+                            >
+                                <circle cx="12" cy="12" r="9"></circle>
+                                <path d="m8 12 3 3 5-6"></path>
+                            </svg>
+                        </span>
+                        <div>
+                            <p>Concluídas</p>
+                            <strong id="concluidas">1</strong>
+                            <small>Serviços finalizados</small>
+                        </div>
+                    </article>
+                </section>
+                <div class="linha-visao">
+                    <section class="quadro visao-sistema">
+                        <div class="titulo-quadro">
+                            <div>
+                                <h2>Visão geral do sistema</h2>
+                                <p>Últimas ordens registradas</p>
+                            </div>
+                            <a href="#ordens">Ver todas →</a>
+                        </div>
+                        <div class="rolagem-tabela">
+                            <table>
+                                <thead>
+                                    <tr>
+                                        <th>Ordem</th>
+                                        <th>Cliente</th>
+                                        <th>Status</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="ordens-recentes">
+                                    <tr>
+                                        <td>#1003</td>
+                                        <td>Ana Oliveira</td>
+                                        <td><span class="situacao concluida">Concluída</span></td>
+                                    </tr>
+                                    <tr>
+                                        <td>#1002</td>
+                                        <td>Lucas Almeida</td>
+                                        <td><span class="situacao andamento">Em andamento</span></td>
+                                    </tr>
+                                    <tr>
+                                        <td>#1001</td>
+                                        <td>Marina Costa</td>
+                                        <td><span class="situacao pendente">Pendente</span></td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </section>
+                    <aside class="quadro andamento-equipe">
+                        <span class="sobretitulo">RITMO DA EQUIPE</span>
+                        <h2>
+                            Do chamado
+                            <br />
+                            à solução.
+                        </h2>
+                        <div class="indicador-progresso">
+                            <strong id="percentual-conclusao">33%</strong>
+                            <span>das OS concluídas</span>
+                        </div>
+                        <progress
+                            aria-label="Percentual de ordens concluídas"
+                            id="progresso-conclusao"
+                            max="100"
+                            value="33"
+                        ></progress>
+                        <p id="resumo-andamento">1 atendimento em andamento.</p>
+                    </aside>
+                </div>
+                <div class="cabecalho-secao">
+                    <div>
+                        <p class="sobretitulo">GERENCIAMENTO</p>
+                        <h2>Ordens de Serviço</h2>
+                    </div>
+                    <a class="botao botao-secundario" href="../techflow-solicitacao/index.html">
+                        + Nova ordem
+                    </a>
+                </div>
+                <section class="painel-ordens" id="ordens">
+                    <div class="titulo-tabela">
+                        <div>
+                            <h2>Todos os atendimentos</h2>
+                            <p class="texto-apoio">Consulte, distribua e acompanhe os serviços.</p>
+                        </div>
+                        <div class="pesquisa">
+                            <label for="filtro-status">Filtrar por status</label>
+                            <select id="filtro-status">
+                                <option value="todos">Todos os status</option>
+                                <option value="pendente">Pendente</option>
+                                <option value="andamento">Em andamento</option>
+                                <option value="concluida">Concluída</option>
+                            </select>
+                        </div>
+                        <div class="pesquisa">
+                            <label for="busca">Buscar OS</label>
+                            <input
+                                disabled=""
+                                id="busca"
+                                placeholder="Busca disponível com o sistema"
+                                title="A busca de dados depende do back-end."
+                                type="search"
+                            />
+                        </div>
+                    </div>
+                    <div
+                        aria-label="Tabela de ordens, com rolagem horizontal"
+                        class="rolagem-tabela"
+                        role="region"
+                        tabindex="0"
+                    >
+                        <table class="tabela-os">
+                            <caption>Lista de ordens registradas</caption>
+                            <thead>
+                                <tr>
+                                    <th scope="col">ID</th>
+                                    <th scope="col">Cliente</th>
+                                    <th scope="col">Problema</th>
+                                    <th scope="col">Técnico</th>
+                                    <th scope="col">Status</th>
+                                    <th scope="col">Ação</th>
+                                </tr>
+                            </thead>
+                            <tbody id="lista-ordens">
+                                <tr class="linha-os concluida">
+                                    <td>#1003</td>
+                                    <td>Ana Oliveira</td>
+                                    <td>Imagem piscando ao ligar.</td>
+                                    <td>Rafael Santos</td>
+                                    <td><span class="situacao concluida">Concluída</span></td>
+                                    <td>
+                                        <button class="botao-detalhes" popovertarget="os-1003" type="button">
+                                            Detalhes
+                                        </button>
+                                    </td>
+                                </tr>
+                                <tr class="linha-os andamento">
+                                    <td>#1002</td>
+                                    <td>Lucas Almeida</td>
+                                    <td>Papel preso durante a impressão.</td>
+                                    <td>Camila Lima</td>
+                                    <td><span class="situacao andamento">Em andamento</span></td>
+                                    <td>
+                                        <button class="botao-detalhes" popovertarget="os-1002" type="button">
+                                            Detalhes
+                                        </button>
+                                    </td>
+                                </tr>
+                                <tr class="linha-os pendente">
+                                    <td>#1001</td>
+                                    <td>Marina Costa</td>
+                                    <td>Não liga após conectar o carregador.</td>
+                                    <td>Rafael Santos</td>
+                                    <td><span class="situacao pendente">Pendente</span></td>
+                                    <td>
+                                        <button class="botao-detalhes" popovertarget="os-1001" type="button">
+                                            Detalhes
+                                        </button>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                    <p class="mensagem" id="mensagem" role="status">3 ordens registradas na visualização.</p>
+                </section>
+                <!-- Cadastro e lista dos técnicos disponíveis -->
+                <section class="painel-tecnicos" id="tecnicos">
+                    <div>
+                        <h2>Técnicos</h2>
+                        <p class="texto-apoio">
+                            Cadastre os profissionais e atribua as OS pelo botão Editar.
+                        </p>
+                    </div>
+                    <form class="formulario-tecnico" id="formulario-tecnico">
+                        <label for="nome-tecnico">Nome do técnico</label>
+                        <div class="linha-tecnico">
+                            <input id="nome-tecnico" maxlength="80" placeholder="Nome completo" required="" />
+                            <button
+                                class="botao"
+                                disabled=""
+                                title="O cadastro de técnicos depende do back-end."
+                                type="submit"
+                            >
+                                Adicionar
+                            </button>
+                        </div>
+                    </form>
+                    <ul class="lista-tecnicos" id="lista-tecnicos">
+                        <li>Rafael Santos</li>
+                        <li>Camila Lima</li>
+                    </ul>
+                    <p class="aviso" id="mensagem-tecnico" role="status">
+                        O cadastro e as alterações dependem da conexão ao sistema.
+                    </p>
+                    <a href="../tela-tecnico/index.html">Abrir painel do técnico →</a>
+                </section>
+                <!-- Clientes e equipamentos são consultados a partir das ordens cadastradas. -->
+                <div class="consultas">
+                    <section class="quadro" id="clientes">
+                        <div class="titulo-quadro">
+                            <div>
+                                <h2>Clientes</h2>
+                                <p>Contatos presentes nas ordens</p>
+                            </div>
+                        </div>
+                        <ul class="lista-consulta" id="lista-clientes">
+                            <li>
+                                <strong>Marina Costa</strong>
+                                <span>Contato do cliente</span>
+                            </li>
+                            <li>
+                                <strong>Lucas Almeida</strong>
+                                <span>Contato do cliente</span>
+                            </li>
+                            <li>
+                                <strong>Ana Oliveira</strong>
+                                <span>Contato do cliente</span>
+                            </li>
+                        </ul>
+                    </section>
+                    <section class="quadro" id="equipamentos">
+                        <div class="titulo-quadro">
+                            <div>
+                                <h2>Equipamentos</h2>
+                                <p>Equipamentos registrados por OS</p>
+                            </div>
+                        </div>
+                        <ul class="lista-consulta" id="lista-equipamentos">
+                            <li>
+                                <strong>Notebook Dell</strong>
+                                <span>#1001 · Marina Costa</span>
+                            </li>
+                            <li>
+                                <strong>Impressora Epson</strong>
+                                <span>#1002 · Lucas Almeida</span>
+                            </li>
+                            <li>
+                                <strong>Monitor Samsung</strong>
+                                <span>#1003 · Ana Oliveira</span>
+                            </li>
+                        </ul>
+                    </section>
+                </div>
+                <footer class="rodape-painel">
+                    TechFlow • Organização em cada etapa.
+                    <span>Gestão de serviços</span>
+                </footer>
+            </main>
+        </div>
+        <!-- Janela de detalhes, sem sair da página -->
+        <!-- O mesmo formulário edita os dados e o responsável pela OS. -->
+        <section
+            aria-labelledby="titulo-os-1003"
+            class="janela-nativa"
+            id="os-1003"
+            popover="auto"
+            role="dialog"
+        >
+            <div class="topo-janela-nativa">
+                <h2 id="titulo-os-1003">Ordem #1003</h2>
+                <button
+                    aria-label="Fechar"
+                    class="fechar-janela"
+                    popovertarget="os-1003"
+                    popovertargetaction="hide"
+                    type="button"
+                >
+                    ×
+                </button>
+            </div>
+            <dl class="detalhes-nativos">
+                <dt>Cliente</dt>
+                <dd>Ana Oliveira</dd>
+                <dt>Equipamento</dt>
+                <dd>Monitor Samsung</dd>
+                <dt>Problema</dt>
+                <dd>Imagem piscando ao ligar.</dd>
+                <dt>Endereço</dt>
+                <dd>Rua do Comércio, 85 — Centro</dd>
+                <dt>Técnico responsável</dt>
+                <dd>Rafael Santos</dd>
+                <dt>Status</dt>
+                <dd><span class="situacao concluida">Concluída</span></dd>
+            </dl>
+        </section>
+        <section
+            aria-labelledby="titulo-os-1002"
+            class="janela-nativa"
+            id="os-1002"
+            popover="auto"
+            role="dialog"
+        >
+            <div class="topo-janela-nativa">
+                <h2 id="titulo-os-1002">Ordem #1002</h2>
+                <button
+                    aria-label="Fechar"
+                    class="fechar-janela"
+                    popovertarget="os-1002"
+                    popovertargetaction="hide"
+                    type="button"
+                >
+                    ×
+                </button>
+            </div>
+            <dl class="detalhes-nativos">
+                <dt>Cliente</dt>
+                <dd>Lucas Almeida</dd>
+                <dt>Equipamento</dt>
+                <dd>Impressora Epson</dd>
+                <dt>Problema</dt>
+                <dd>Papel preso durante a impressão.</dd>
+                <dt>Endereço</dt>
+                <dd>Av. Brasil, 450 — Jardim América</dd>
+                <dt>Técnico responsável</dt>
+                <dd>Camila Lima</dd>
+                <dt>Status</dt>
+                <dd><span class="situacao andamento">Em andamento</span></dd>
+            </dl>
+        </section>
+        <section
+            aria-labelledby="titulo-os-1001"
+            class="janela-nativa"
+            id="os-1001"
+            popover="auto"
+            role="dialog"
+        >
+            <div class="topo-janela-nativa">
+                <h2 id="titulo-os-1001">Ordem #1001</h2>
+                <button
+                    aria-label="Fechar"
+                    class="fechar-janela"
+                    popovertarget="os-1001"
+                    popovertargetaction="hide"
+                    type="button"
+                >
+                
+                </button>
+            </div>
+            <dl class="detalhes-nativos">
+                <dt>Cliente</dt>
+                <dd>Marina Costa</dd>
+                <dt>Equipamento</dt>
+                <dd>Notebook Dell</dd>
+                <dt>Problema</dt>
+                <dd>Não liga após conectar o carregador.</dd>
+                <dt>Endereço</dt>
+                <dd>Rua das Flores, 120 — Centro</dd>
+                <dt>Técnico responsável</dt>
+                <dd>Rafael Santos</dd>
+                <dt>Status</dt>
+                <dd><span class="situacao pendente">Pendente</span></dd>
+            </dl>
+        </section>
+        <script src="script.js"></script>
+    </body>
+</html>

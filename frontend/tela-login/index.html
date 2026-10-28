@@ -1,0 +1,113 @@
+<!doctype html>
+<html lang="pt-br">
+    <head>
+        <meta charset="utf-8" />
+        <meta content="width=device-width, initial-scale=1.0" name="viewport" />
+        <title>Bem-vindo de volta | TechFlow</title>
+        <link href="../assets/globais.css" rel="stylesheet" />
+        <link href="style.css" rel="stylesheet" />
+    </head>
+    <body>
+    <main class="pagina-login">
+    <!-- Apresentação visual ao lado do formulário -->
+    <section class="apresentacao-login">
+    <a class="marca" href="../tela-principal/index.html">
+        <img alt="Símbolo da TechFlow" src="../img/LOGO.png" width="200" />
+    </a>
+    
+    <div class="texto-login">
+    <p class="sobretitulo">Cada conexão faz a diferença</p>
+    <h1>O próximo passo<br/>para uma rotina<br/>
+    <span>mais simples.</span>
+    </h1><p>Seus atendimentos, sua equipe e todas as informações no mesmo lugar.</p>
+    <div class="ilustracao-login">
+    <div class="linha-ilustracao">
+    <span class="simbolo-login">▤</span>
+    <div><strong>Nova ordem recebida</strong>
+    <small>O começo de uma solução.</small>
+    </div>
+                            
+    <span class="confirmacao">✓</span>
+    </div>
+                        
+    <div class="conector"></div>
+    <div class="linha-ilustracao">
+    <span class="simbolo-login">⌁</span>
+    <div>
+                                
+    <strong>Equipe em ação</strong>
+    <small>Informação que acompanha você.</small>
+    </div>                    
+    <span class="confirmacao">✓</span>
+    </div>
+                        
+    <div class="conector"></div>
+    <div class="linha-ilustracao">
+    <span class="simbolo-login">✓</span>
+    <div>                      
+    <strong>Mais um problema resolvido</strong>
+    <small>Do chamado à entrega.</small>
+    </div>
+                            
+    <span class="confirmacao">✓</span>
+    </div>
+    </div>
+    </div>
+                
+    <p class="rodape-login">TECHFLOW • ORGANIZAR. CONECTAR. RESOLVER.</p>
+    </section>
+    <section class="area-formulario">
+    <a class="voltar-login" href="../tela-principal/index.html">← Voltar para o início</a>
+    <div class="caixa-login">
+    <p class="sobretitulo">Seu espaço de trabalho</p>
+    <h2>Bem-vindo de volta.</h2>
+    <p class="texto-apoio">Escolha seu perfil e acesse a TechFlow.</p>
+    <form id="formulario-login">
+    <fieldset class="perfis">
+    <legend>Como você quer entrar?</legend>
+    <label>
+                                
+    <input checked="" name="perfil" type="radio" value="admin" />
+    <span>▤ Administrador</span>
+    </label>
+                            
+    <label>
+    <input name="perfil" type="radio" value="tecnico" />
+    <span>⌁ Técnico</span>
+    </label>
+    </fieldset>
+    <div class="campo-login">
+                            
+    <label for="email">E-mail</label>
+    <input autocomplete="username" name="email" id="email" placeholder="seuemail@exemplo.com" required="" type="email"/>
+    </div>
+    
+    <div class="campo-login">
+    <label for="senha">Senha</label>
+    <div class="campo-senha">
+    <input autocomplete="current-password" id="senha" name="senha" placeholder="Digite sua senha" required="" type="password"/>
+    </div>
+    </div>
+                        
+    <div class="ajuda-login">
+    <span>Acesso da equipe</span>
+    <details class="ajuda-nativa">
+    <summary>Precisa de ajuda?</summary>
+    <p>Escolha o perfil e preencha os campos para acessar a página correspondente.
+    </p>
+    </details>
+    </div>
+    
+    <button
+    class="botao-login-chique entrar-admin"
+    type="submit">Entrar no sistema<span>→</span></button>
+    <button class="botao-login-chique entrar-tecnico" type="submit">Entrar no sistema<span>→</span></button>
+    <p class="mensagem" id="mensagem-login" role="status"></p>
+    </form>
+    </div>
+    <p class="copyright-login">© 2026 TechFlow • Gestão de Ordens de Serviço</p>
+    </section>
+    </main>
+    <script src="script.js"></script>
+    </body>
+</html>

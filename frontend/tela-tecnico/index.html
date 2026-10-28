@@ -1,0 +1,275 @@
+<!doctype html>
+<html lang="pt-br">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Área do técnico | TechFlow</title>
+    <link href="../assets/globais.css" rel="stylesheet">
+    <link href="style.css" rel="stylesheet">
+</head>
+<body>
+    <header class="cabecalho">
+        <div class="limite navegacao">
+            <a class="marca" href="../tela-principal/index.html">
+                <img src="../img/LOGO.png" alt="Símbolo TechFlow" width="120">
+            </a>
+            <nav aria-label="Menu do técnico">
+                <a class="selecionado" href="#servicos">Serviços atribuídos</a>
+                <button popovertarget="consulta-agenda" type="button">Calendário</button>
+                <button popovertarget="consulta-logistica" type="button">Logística</button>
+                <button popovertarget="consulta-perfil" type="button">Perfil</button>
+            </nav>
+            <div class="perfil-topo">
+                <span class="avatar">TC</span>
+                <div>
+                    <strong id="nome-topo">Área técnica</strong>
+                    <a data-sair href="../tela-login/index.html">Sair ↗</a>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <main class="limite conteudo">
+        <header class="boas-vindas">
+            <div>
+                <p class="sobretitulo">SEU DIA, MAIS ORGANIZADO</p>
+                <h1 id="saudacao-tecnico">Olá, Técnico.</h1>
+                <p class="texto-apoio">Tudo pronto para o próximo atendimento?</p>
+            </div>
+            <div class="selecao-tecnico">
+                <label for="tecnico-atual">Visualizar atendimentos de</label>
+                <select id="tecnico-atual">
+                    <option value="todos">Todos os técnicos</option>
+                    <option value="rafael">Rafael Santos</option>
+                    <option value="camila">Camila Lima</option>
+                </select>
+            </div>
+        </header>
+
+        <h2 class="titulo-acoes">Ações rápidas</h2>
+        <section class="acoes-rapidas" aria-label="Ações rápidas">
+            <a class="acao-rapida" href="#servicos">
+                <span class="icone-acao">
+                    <svg aria-hidden="true" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.6" viewBox="0 0 24 24">
+                        <rect height="18" rx="2" width="14" x="5" y="3"></rect>
+                        <path d="M9 8h6M9 12h6M9 16h4"></path>
+                    </svg>
+                </span>
+                <div>
+                    <strong>Atualizar status</strong>
+                    <small>Inicie ou conclua um serviço</small>
+                </div>
+                <span>↗</span>
+            </a>
+
+            <button class="acao-rapida" id="relatar-falha" popovertarget="registro-ocorrencia" type="button">
+                <span class="icone-acao">
+                    <svg aria-hidden="true" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.6" viewBox="0 0 24 24">
+                        <path d="m12 3 10 18H2L12 3Z"></path>
+                        <path d="M12 9v5M12 17v1"></path>
+                    </svg>
+                </span>
+                <div>
+                    <strong>Relatar ocorrência</strong>
+                    <small>Informe falhas ou peças em falta</small>
+                </div>
+                <span>↗</span>
+            </button>
+
+            <button class="acao-rapida" popovertarget="consulta-agenda" type="button">
+                <span class="icone-acao">
+                    <svg aria-hidden="true" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.6" viewBox="0 0 24 24">
+                        <rect height="16" rx="2" width="18" x="3" y="5"></rect>
+                        <path d="M7 3v4M17 3v4M3 10h18M7 14h3M14 14h3M7 17h3"></path>
+                    </svg>
+                </span>
+                <div>
+                    <strong>Consultar agenda</strong>
+                    <small>Veja os serviços agendados</small>
+                </div>
+                <span>↗</span>
+            </button>
+        </section>
+
+        <section class="faixa-resumo" aria-label="Resumo dos atendimentos">
+            <p><span class="ponto-status"></span> Seu trabalho faz a diferença.</p>
+            <div>
+                <span><strong id="total-tecnico">3</strong> serviços</span>
+                <span><strong id="ativos-tecnico">1</strong> em andamento</span>
+                <span><strong id="finalizados-tecnico">1</strong> concluídos</span>
+            </div>
+        </section>
+
+        <section id="servicos">
+            <div class="cabecalho-servicos">
+                <div>
+                    <p class="sobretitulo">VAMOS COLOCAR EM DIA</p>
+                    <h2>Serviços atribuídos</h2>
+                    <p class="texto-apoio">Confira os detalhes antes de iniciar o atendimento.</p>
+                </div>
+                <div class="filtros" aria-label="Filtrar tarefas" role="group">
+                    <input checked class="controle-css" id="filtro-todos" name="status-tecnico" type="radio" value="todos">
+                    <label class="filtro" for="filtro-todos">Todos</label>
+                    <input class="controle-css" id="filtro-pendente" name="status-tecnico" type="radio" value="pendente">
+                    <label class="filtro" for="filtro-pendente">Pendentes</label>
+                    <input class="controle-css" id="filtro-andamento" name="status-tecnico" type="radio" value="andamento">
+                    <label class="filtro" for="filtro-andamento">Em andamento</label>
+                    <input class="controle-css" id="filtro-concluida" name="status-tecnico" type="radio" value="concluida">
+                    <label class="filtro" for="filtro-concluida">Concluídos</label>
+                </div>
+            </div>
+
+            <p class="mensagem" id="mensagem" aria-live="polite" role="status"></p>
+
+            <div class="lista-tarefas" id="tarefas">
+                <article class="cartao-tarefa concluida tecnico-rafael">
+                    <div class="topo-cartao">
+                        <span class="codigo">OS #1003</span>
+                        <span class="situacao concluida">Concluída</span>
+                    </div>
+                    <h2>Monitor Samsung</h2>
+                    <p class="informacao"><strong>Defeito</strong><span>Imagem piscando ao ligar.</span></p>
+                    <p class="informacao"><strong>Cliente</strong><span>Ana Oliveira</span></p>
+                    <p class="informacao"><strong>Técnico</strong><span>Rafael Santos</span></p>
+                    <p class="informacao"><strong>Endereço</strong><span>Rua do Comércio, 85 — Centro</span></p>
+                    <div class="acoes">
+                        <button class="botao botao-secundario" disabled title="Atualização disponível com o back-end" type="button">Iniciar</button>
+                        <button class="botao" disabled title="Atualização disponível com o back-end" type="button">Finalizar</button>
+                    </div>
+                    <button class="botao-nota" popovertarget="registro-ocorrencia" type="button">+ Adicionar nota</button>
+                </article>
+
+                <article class="cartao-tarefa andamento tecnico-camila">
+                    <div class="topo-cartao">
+                        <span class="codigo">OS #1002</span>
+                        <span class="situacao andamento">Em andamento</span>
+                    </div>
+                    <h2>Impressora Epson</h2>
+                    <p class="informacao"><strong>Defeito</strong><span>Papel preso durante a impressão.</span></p>
+                    <p class="informacao"><strong>Cliente</strong><span>Lucas Almeida</span></p>
+                    <p class="informacao"><strong>Técnico</strong><span>Camila Lima</span></p>
+                    <p class="informacao"><strong>Endereço</strong><span>Av. Brasil, 450 — Jardim América</span></p>
+                    <div class="acoes">
+                        <button class="botao botao-secundario" disabled title="Atualização disponível com o back-end" type="button">Iniciar</button>
+                        <button class="botao" disabled title="Atualização disponível com o back-end" type="button">Finalizar</button>
+                    </div>
+                    <button class="botao-nota" popovertarget="registro-ocorrencia" type="button">+ Adicionar nota</button>
+                </article>
+
+                <article class="cartao-tarefa pendente tecnico-rafael">
+                    <div class="topo-cartao">
+                        <span class="codigo">OS #1001</span>
+                        <span class="situacao pendente">Pendente</span>
+                    </div>
+                    <h2>Notebook Dell</h2>
+                    <p class="informacao"><strong>Defeito</strong><span>Não liga após conectar o carregador.</span></p>
+                    <p class="informacao"><strong>Cliente</strong><span>Marina Costa</span></p>
+                    <p class="informacao"><strong>Técnico</strong><span>Rafael Santos</span></p>
+                    <p class="informacao"><strong>Endereço</strong><span>Rua das Flores, 120 — Centro</span></p>
+                    <div class="acoes">
+                        <button class="botao botao-secundario" disabled title="Atualização disponível com o back-end" type="button">Iniciar</button>
+                        <button class="botao" disabled title="Atualização disponível com o back-end" type="button">Finalizar</button>
+                    </div>
+                    <button class="botao-nota" popovertarget="registro-ocorrencia" type="button">+ Adicionar nota</button>
+                </article>
+
+                <p class="sem-resultados">Nenhum serviço corresponde aos filtros selecionados.</p>
+            </div>
+        </section>
+
+        <section class="historico" id="historico">
+            <div class="titulo-historico">
+                <div>
+                    <h2>Histórico de serviços concluídos</h2>
+                    <p class="texto-apoio">As entregas do profissional selecionado, em um só lugar.</p>
+                </div>
+                <span class="selo-historico">
+                    <svg aria-hidden="true" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.6" viewBox="0 0 24 24">
+                        <circle cx="12" cy="12" r="9"></circle>
+                        <path d="m8 12 3 3 5-6"></path>
+                    </svg>
+                    Trabalho registrado
+                </span>
+            </div>
+
+            <div class="rolagem-tabela" aria-label="Histórico com rolagem horizontal" role="region" tabindex="0">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Conclusão</th>
+                            <th>Ordem / Cliente</th>
+                            <th>Equipamento</th>
+                            <th>Tempo decorrido</th>
+                            <th>Status</th>
+                        </tr>
+                    </thead>
+                    <tbody id="lista-historico">
+                        <tr>
+                            <td>A confirmar</td>
+                            <td>#1003 · Ana Oliveira</td>
+                            <td>Monitor Samsung</td>
+                            <td>A registrar</td>
+                            <td><span class="situacao concluida">Concluída</span></td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </section>
+
+        <footer class="rodape-painel">
+            <span>TechFlow • Organização em cada etapa.</span>
+            <p>
+                <a href="../tela-admin/index.html">Painel administrativo ↗</a>
+                ·
+                <a data-sair href="../tela-login/index.html">Sair</a>
+            </p>
+        </footer>
+    </main>
+
+    <section class="janela-nativa" id="registro-ocorrencia" popover="auto" role="dialog" aria-labelledby="titulo-registro-ocorrencia">
+        <div class="topo-janela-nativa">
+            <h2 id="titulo-registro-ocorrencia">Registro do atendimento</h2>
+            <button class="fechar-janela" aria-label="Fechar" popovertarget="registro-ocorrencia" popovertargetaction="hide" type="button">×</button>
+        </div>
+        <label for="nota-servico">Descreva a ocorrência</label>
+        <textarea id="nota-servico" maxlength="800" placeholder="Informe a falha ou a peça em falta" rows="4"></textarea>
+        <p>O registro será enviado quando esta área estiver conectada ao sistema de atendimento.</p>
+        <button class="botao" popovertarget="registro-ocorrencia" popovertargetaction="hide" type="button">Voltar aos serviços</button>
+    </section>
+
+    <section class="janela-nativa" id="consulta-agenda" popover="auto" role="dialog" aria-labelledby="titulo-consulta-agenda">
+        <div class="topo-janela-nativa">
+            <h2 id="titulo-consulta-agenda">Agenda de atendimentos</h2>
+            <button class="fechar-janela" aria-label="Fechar" popovertarget="consulta-agenda" popovertargetaction="hide" type="button">×</button>
+        </div>
+        <p>Consulte os serviços e confirme os horários com a equipe responsável.</p>
+        <a class="botao" href="#servicos">Ver serviços atribuídos</a>
+    </section>
+
+    <section class="janela-nativa" id="consulta-perfil" popover="auto" role="dialog" aria-labelledby="titulo-consulta-perfil">
+        <div class="topo-janela-nativa">
+            <h2 id="titulo-consulta-perfil">Área técnica</h2>
+            <button class="fechar-janela" aria-label="Fechar" popovertarget="consulta-perfil" popovertargetaction="hide" type="button">×</button>
+        </div>
+        <p>Visualização dos atendimentos da equipe técnica.</p>
+        <p>Profissionais: Rafael Santos e Camila Lima.</p>
+    </section>
+
+    <section class="janela-nativa" id="consulta-logistica" popover="auto" role="dialog" aria-labelledby="titulo-consulta-logistica">
+        <div class="topo-janela-nativa">
+            <h2 id="titulo-consulta-logistica">Endereços dos atendimentos</h2>
+            <button class="fechar-janela" aria-label="Fechar" popovertarget="consulta-logistica" popovertargetaction="hide" type="button">×</button>
+        </div>
+        <article class="item-consulta">
+            <strong>#1001 · Marina Costa</strong>
+            <p>Rua das Flores, 120 — Centro</p>
+        </article>
+        <article class="item-consulta">
+            <strong>#1002 · Lucas Almeida</strong>
+            <p>Av. Brasil, 450 — Jardim América</p>
+        </article>
+    </section>
+
+    <script src="script.js"></script>
+</body>
+</html>

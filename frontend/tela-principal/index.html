@@ -1,0 +1,329 @@
+<!doctype html>
+
+<html lang="pt-br">
+    <head>
+        <meta charset="utf-8" />
+        <meta content="width=device-width, initial-scale=1.0" name="viewport" />
+        <title>Organize. Conecte. Resolva. | TechFlow</title>
+        <link href="../assets/globais.css" rel="stylesheet" />
+        <link href="style.css" rel="stylesheet" />
+    </head>
+    <body>
+        <header class="cabecalho">
+            <!-- Link discreto para os devs no canto superior -->
+            <a class="link-dev" href="../tela-login/index.html">Entrar no sistema ↗</a>
+            <div class="limite navegacao">
+                <a class="marca" href="../tela-principal/index.html">
+                    <img alt="Símbolo da TechFlow" class="LOGO" src="../img/LOGO.png" width="90" />
+                </a>
+                <input class="controle-css" id="abrir-menu" type="checkbox" />
+                <label class="botao-menu" for="abrir-menu">Menu ☰</label>
+                <nav aria-label="Menu principal" id="menu">
+                    <a href="#recursos">Recursos</a>
+                    <a href="#como-funciona">Como funciona</a>
+                    <a href="#duvidas">Dúvidas</a>
+                    <!-- Nova aba Login adicionada -->
+                    <a href="../techflow-Login-cliente/index.html">Login</a>
+                </nav>
+            </div>
+        </header>
+        <main>
+            <!-- Destaque inicial e prévia interativa de uma ordem -->
+            <section class="destaque">
+                <div class="limite abertura">
+                    <div class="texto-destaque">
+                        <p class="etiqueta">
+                            <span></span>
+                            Tecnologia a serviço da sua equipe
+                        </p>
+                        <h1>
+                            Menos confusão.
+                            <br />
+                            Mais
+                            <span>soluções.</span>
+                        </h1>
+                        <p class="descricao">
+                            Gestão Inteligente de Ordens de Serviço. Conecte chamados, técnicos e atendimentos
+                            em um fluxo simples, do primeiro contato à entrega.
+                        </p>
+                        <div class="acoes-destaque">
+                            <a class="botao" href="../techflow-Login-cliente/index.html">
+                                Acessar nosso sistema
+                                <span>↗</span>
+                            </a>
+                        </div>
+                        <div class="qualidades">
+                            <span>✓ Simples de usar</span>
+                            <span>✓ Feito para sua equipe</span>
+                            <span>✓ No celular ou computador</span>
+                        </div>
+                    </div>
+                    <div class="visual-destaque" id="previa-servico">
+                        <div class="janela">
+                            <div class="barra-janela">
+                                <div class="pontos">
+                                    <i></i>
+                                    <i></i>
+                                    <i></i>
+                                </div>
+                                <span>TECHFLOW / VISÃO DO SERVIÇO</span>
+                                <span>↗</span>
+                            </div>
+                            <div class="corpo-janela">
+                                <div class="cabecalho-previa">
+                                    <div>
+                                        <p class="sobretitulo">Tudo em movimento</p>
+                                        <h2>
+                                            Um atendimento.
+                                            <br />
+                                            Todas as etapas.
+                                        </h2>
+                                    </div>
+                                    <span class="icone-grande">↗</span>
+                                </div>
+                                <div class="ordem-previa">
+                                    <div class="linha-previa">
+                                        <span>OS #1024</span>
+                                        <span class="situacao pendente" id="status-previa">Pendente</span>
+                                    </div>
+                                    <h3>Notebook Dell Inspiron</h3>
+                                    <p>Diagnóstico e manutenção preventiva</p>
+                                    <div class="cliente-previa">
+                                        <span class="avatar">MC</span>
+                                        <div>
+                                            <strong>Marina Costa</strong>
+                                            <small>Cliente · Atendimento</small>
+                                        </div>
+                                    </div>
+                                    <div class="progresso"><div id="barra-progresso"></div></div>
+                                    <div class="etapas-previa">
+                                        <span>Recebida</span>
+                                        <span>Em serviço</span>
+                                        <span>Resolvida</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="selo-flutuante">
+                            <span>✓</span>
+                            <div>
+                                <strong>Informação no lugar certo.</strong>
+                                <small>Sua equipe pode focar na solução.</small>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+            <section class="faixa">
+                <div class="limite">
+                    <span>DA SOLICITAÇÃO À SOLUÇÃO</span>
+                    <p>
+                        Um fluxo completo.
+                        <strong>Uma equipe conectada.</strong>
+                    </p>
+                    <a href="#recursos">Conheça os recursos ↓</a>
+                </div>
+            </section>
+            <!-- Recursos organizados em cartões -->
+            <section class="secao limite" id="recursos">
+                <div class="titulo-secao">
+                    <div>
+                        <p class="sobretitulo">Cada detalhe, no seu lugar</p>
+                        <h2>
+                            Organização para quem
+                            <br />
+                            resolve de verdade.
+                        </h2>
+                    </div>
+                    <p>
+                        Troque as informações espalhadas por uma rotina clara. Mais tempo para atender, menos
+                        tempo procurando respostas.
+                    </p>
+                </div>
+                <div class="cartoes-recursos">
+                    <article class="cartao-recurso">
+                        <span class="icone-recurso">▤</span>
+                        <span class="numero-recurso">01</span>
+                        <h3>Chamados organizados</h3>
+                        <p>
+                            Cadastre o cliente, o equipamento e o problema. Os detalhes do atendimento ficam
+                            juntos desde o início.
+                        </p>
+                        <span>↗</span>
+                    </article>
+                    <article class="cartao-recurso">
+                        <span class="icone-recurso">◷</span>
+                        <span class="numero-recurso">02</span>
+                        <h3>Status sempre à vista</h3>
+                        <p>
+                            Saiba o que está pendente, em andamento ou concluído sem precisar consultar várias
+                            planilhas.
+                        </p>
+                        <span>↗</span>
+                    </article>
+                    <article class="cartao-recurso">
+                        <span class="icone-recurso">⌁</span>
+                        <span class="numero-recurso">03</span>
+                        <h3>Técnicos conectados</h3>
+                        <p>
+                            Distribua os serviços e acompanhe as atualizações da equipe em uma interface feita
+                            para o celular.
+                        </p>
+                        <span>↗</span>
+                    </article>
+                </div>
+            </section>
+            <section class="secao secao-fluxo" id="como-funciona">
+                <div class="limite">
+                    <p class="sobretitulo">Sem complicar a rotina</p>
+                    <h2>
+                        Três passos.
+                        <br />
+                        Um serviço bem resolvido.
+                    </h2>
+                    <div class="fluxo">
+                        <input checked="" class="controle-css" id="etapa-1" name="etapa" type="radio" />
+                        <input class="controle-css" id="etapa-2" name="etapa" type="radio" />
+                        <input class="controle-css" id="etapa-3" name="etapa" type="radio" />
+                        <div aria-label="Etapas do atendimento" class="passos" role="group">
+                            <label class="passo" for="etapa-1">
+                                <span>01</span>
+                                <span>
+                                    <strong>Registre o chamado</strong>
+                                    <small>O começo de um atendimento organizado.</small>
+                                </span>
+                                <b>↗</b>
+                            </label>
+                            <label class="passo" for="etapa-2">
+                                <span>02</span>
+                                <span>
+                                    <strong>Coloque a equipe em ação</strong>
+                                    <small>O serviço certo para o técnico certo.</small>
+                                </span>
+                                <b>↗</b>
+                            </label>
+                            <label class="passo" for="etapa-3">
+                                <span>03</span>
+                                <span>
+                                    <strong>Acompanhe até concluir</strong>
+                                    <small>Visibilidade em cada etapa do trabalho.</small>
+                                </span>
+                                <b>↗</b>
+                            </label>
+                        </div>
+                        <div aria-live="polite" class="explicacao">
+                            <div class="conteudo-etapa conteudo-etapa-1">
+                                <span>01 / REGISTRO</span>
+                                <h3>O primeiro passo é ouvir.</h3>
+                                <p>
+                                    Registre os dados do cliente e descreva o problema do equipamento. Uma boa
+                                    descrição ajuda a equipe a preparar o atendimento.
+                                </p>
+                                <div class="exemplo-etapa">
+                                    <span>✓</span>
+                                    <p>Nome, telefone, equipamento e defeito: tudo na mesma ordem.</p>
+                                </div>
+                            </div>
+                            <div class="conteudo-etapa conteudo-etapa-2">
+                                <span>02 / ATENDIMENTO</span>
+                                <h3>Cada serviço tem um responsável.</h3>
+                                <p>
+                                    O administrador organiza o atendimento e designa um profissional para
+                                    cuidar do equipamento.
+                                </p>
+                                <div class="exemplo-etapa">
+                                    <span>✓</span>
+                                    <p>Os detalhes do chamado ajudam a preparar o serviço.</p>
+                                </div>
+                            </div>
+                            <div class="conteudo-etapa conteudo-etapa-3">
+                                <span>03 / CONCLUSÃO</span>
+                                <h3>Resolvido. E registrado.</h3>
+                                <p>
+                                    O histórico da ordem reúne as informações do atendimento até sua
+                                    conclusão.
+                                </p>
+                                <div class="exemplo-etapa">
+                                    <span>✓</span>
+                                    <p>Organização para consultar cada etapa do trabalho.</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+            <section class="secao limite secao-duvidas" id="duvidas">
+                <div>
+                    <p class="sobretitulo">Vamos esclarecer</p>
+                    <h2>
+                        Antes de começar,
+                        <br />
+                        tire suas dúvidas.
+                    </h2>
+                    <p class="texto-apoio">Uma ferramenta simples desde o primeiro acesso.</p>
+                </div>
+                <div class="perguntas">
+                    <details open="">
+                        <summary>Posso usar no celular?</summary>
+                        <p>
+                            Sim. As telas se adaptam ao tamanho do dispositivo. O painel do técnico tem
+                            cartões e botões pensados para facilitar o atendimento no celular.
+                        </p>
+                    </details>
+                    <details>
+                        <summary>Como acompanho uma ordem?</summary>
+                        <p>
+                            No painel administrativo, busque pelo cliente ou pelo número da OS. Abra os
+                            detalhes para consultar o problema, o técnico responsável e a situação atual.
+                        </p>
+                    </details>
+                    <details>
+                        <summary>Como solicito um serviço?</summary>
+                        <p>
+                            Entre na área do cliente, informe o equipamento e descreva o problema. Depois,
+                            escolha sua preferência de atendimento e envie a solicitação.
+                        </p>
+                    </details>
+                    <details>
+                        <summary>Como acesso minha área?</summary>
+                        <p>
+                            Clientes podem criar uma conta pelo link Login. A equipe acessa os perfis de
+                            Administrador e Técnico pelo link Entrar no sistema.
+                        </p>
+                    </details>
+                </div>
+            </section>
+            <section class="limite chamada-final">
+                <div>
+                    <p class="sobretitulo">Pronto para organizar?</p>
+                    <h2>
+                        Seu próximo atendimento
+                        <br />
+                        pode começar melhor.
+                    </h2>
+                </div>
+                <a class="botao botao-claro" href="../techflow-Login-cliente/index.html">
+                    Entrar na TechFlow ↗
+                </a>
+            </section>
+        </main>
+        <footer class="rodape limite">
+            <div>
+                <a class="marca" href="../tela-principal/index.html">
+                    <img alt="Símbolo da TechFlow" src="../img/LOGO.png" width="120" />
+                    <span>
+                        Tech
+                        <span class="nome-destaque">Flow</span>
+                    </span>
+                </a>
+                <p>Conectando pessoas. Resolvendo serviços.</p>
+            </div>
+            <div>
+                <a href="#recursos">Recursos</a>
+                <a href="#duvidas">Dúvidas</a>
+                <a href="../tela-login/index.html">Login</a>
+            </div>
+            <p class="direitos">© 2026 TechFlow • Gestão de Ordens de Serviço</p>
+        </footer>
+    </body>
+</html>
