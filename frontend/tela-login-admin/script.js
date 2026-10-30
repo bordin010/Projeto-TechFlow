@@ -56,6 +56,7 @@ try {
     mensagem.textContent = dados.mensagem;
 
     sessionStorage.setItem("usuario", JSON.stringify(dados.usuario));
+    sessionStorage.setItem("token", dados.token);
 
     if (dados.usuario.perfil === "admin") {
         window.location.href = "../tela-admin/index.html";

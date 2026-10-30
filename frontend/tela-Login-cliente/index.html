@@ -65,12 +65,13 @@
                     <div id="area-entrar">
                         <h2>Bem-vindo de volta.</h2>
                         <p class="texto-apoio">Entre na sua conta para acompanhar seus serviços.</p>
-                        <form action="../techflow-solicitacao/index.html" id="formulario-login" method="get">
+                        <form id="formulario-login">
                             <div class="campo-login">
                                 <label for="email-login">E-mail</label>
                                 <input
                                     autocomplete="email"
                                     id="email-login"
+                                    name="email"
                                     placeholder="seuemail@exemplo.com"
                                     required=""
                                     type="email"
@@ -82,6 +83,7 @@
                                     <input
                                         autocomplete="current-password"
                                         id="senha-login"
+                                        id="senha"
                                         placeholder="Digite sua senha"
                                         required=""
                                         type="password"
@@ -109,11 +111,7 @@
                     <div id="area-cadastro">
                         <h2>Crie sua conta.</h2>
                         <p class="texto-apoio">Cadastre-se para começar a utilizar a TechFlow.</p>
-                        <form
-                            action="../techflow-solicitacao/index.html"
-                            id="formulario-cadastro"
-                            method="get"
-                        >
+                        <form id="formulario-cadastro">
                             <div class="campo-login">
                                 <label for="nome-cliente">Nome completo</label>
                                 <input
@@ -184,5 +182,6 @@
                 <p class="copyright-login">© 2026 TechFlow • Gestão de Ordens de Serviço</p>
             </section>
         </main>
+        <script src="script.js"></script>
     </body>
 </html>

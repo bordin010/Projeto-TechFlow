@@ -284,15 +284,14 @@
                             </select>
                         </div>
                         <div class="pesquisa">
-                            <label for="busca">Buscar OS</label>
-                            <input
-                                disabled=""
-                                id="busca"
-                                placeholder="Busca disponível com o sistema"
-                                title="A busca de dados depende do back-end."
-                                type="search"
-                            />
-                        </div>
+    <label for="busca">Buscar OS</label>
+    <input
+        id="busca"
+        placeholder="Buscar por ID, cliente ou problema..."
+        title="Pesquise pelo número da OS, nome do cliente ou descrição do problema."
+        type="search"
+    />
+</div>
                     </div>
                     <div
                         aria-label="Tabela de ordens, com rolagem horizontal"
@@ -363,19 +362,56 @@
                         </p>
                     </div>
                     <form class="formulario-tecnico" id="formulario-tecnico">
-                        <label for="nome-tecnico">Nome do técnico</label>
-                        <div class="linha-tecnico">
-                            <input id="nome-tecnico" maxlength="80" placeholder="Nome completo" required="" />
-                            <button
-                                class="botao"
-                                disabled=""
-                                title="O cadastro de técnicos depende do back-end."
-                                type="submit"
-                            >
-                                Adicionar
-                            </button>
-                        </div>
-                    </form>
+    <label for="nome-tecnico">Nome completo</label>
+    <input
+        id="nome-tecnico"
+        name="nome"
+        maxlength="80"
+        placeholder="Nome completo"
+        required
+    />
+
+    <label for="email-tecnico">E-mail</label>
+    <input
+        id="email-tecnico"
+        name="email"
+        type="email"
+        maxlength="150"
+        placeholder="tecnico@techflow.com"
+        required
+    />
+
+    <label for="senha-tecnico">Senha inicial</label>
+    <input
+        id="senha-tecnico"
+        name="senha"
+        type="password"
+        minlength="8"
+        placeholder="Mínimo de 8 caracteres"
+        required
+    />
+
+    <label for="especialidade-tecnico">Especialidade</label>
+    <input
+        id="especialidade-tecnico"
+        name="especialidade"
+        maxlength="100"
+        placeholder="Ex.: Manutenção de computadores"
+    />
+
+    <label for="telefone-tecnico">Telefone</label>
+    <input
+        id="telefone-tecnico"
+        name="telefone"
+        type="tel"
+        maxlength="20"
+        placeholder="Ex.: 11999999999"
+    />
+
+    <button class="botao" type="submit">
+        Adicionar técnico
+    </button>
+</form>
                     <ul class="lista-tecnicos" id="lista-tecnicos">
                         <li>Rafael Santos</li>
                         <li>Camila Lima</li>

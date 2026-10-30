@@ -2,12 +2,44 @@ const express = require("express");
 const db = require("./db");
 const bcrypt = require("bcryptjs");
 const cors = require("cors");
+const jwt = require("jsonwebtoken");
+require("dotenv").config();
 
 const app = express();
 const PORT = 3000;
 
 app.use(cors());
 app.use(express.json());
+
+function autenticarToken(req, res, next) {
+    const cabecalho = req.headers["authorization"];
+
+    if (!cabecalho) {
+        return res.status(401).json({
+            mensagem: "Acesso negado. Faça login para continuar."
+        });
+    }
+
+    const partes = cabecalho.split(" ");
+    const token = partes[1];
+
+    if (partes[0] !== "Bearer" || !token) {
+        return res.status(401).json({
+            mensagem: "Token de autenticação inválido."
+        });
+    }
+
+    jwt.verify(token, process.env.JWT_SECRET, (erro, usuario) => {
+        if (erro) {
+            return res.status(403).json({
+                mensagem: "Token inválido ou expirado. Faça login novamente."
+            });
+        }
+
+        req.usuario = usuario;
+        next();
+    });
+}
 
 app.get("/", (req, res) => {
     res.json({
@@ -16,63 +48,105 @@ app.get("/", (req, res) => {
 });
 
 app.post("/api/login", async (req, res) => {
-const { email, senha, perfil } = req.body;
+    const { email, senha, perfil } = req.body;
 
-if (!email || !senha || !perfil) {
-    return res.status(400).json({
-        erro: "E-mail, senha e perfil são obrigatórios."
-    });
-}
+    if (!email || !senha || !perfil) {
+        return res.status(400).json({
+            erro: "E-mail, senha e perfil são obrigatórios."
+        });
+    }
 
-if (!["admin", "tecnico"].includes(perfil)) {
-    return res.status(400).json({
-        erro: "Perfil inválido."
-    });
-}
+    if (!["admin", "tecnico", "cliente"].includes(perfil)) {
+        return res.status(400).json({
+            erro: "Perfil inválido."
+        });
+    }
 
-try {
-    const [usuarios] = await db.query(
-        `SELECT id_usuario, nome, email, senha, tipo
-         FROM usuarios
-         WHERE email = ? AND tipo = ?`,
-        [email.trim(), perfil]
+    try {
+        const [usuarios] = await db.query(
+            `SELECT id_usuario, nome, email, senha, tipo
+             FROM usuarios
+             WHERE email = ? AND tipo = ?`,
+            [email.trim(), perfil]
+        );
+
+        if (usuarios.length === 0) {
+            return res.status(401).json({
+                erro: "E-mail ou senha inválidos."
+            });
+        }
+
+        const usuario = usuarios[0];
+        const senhaValida = await bcrypt.compare(senha, usuario.senha);
+
+        if (!senhaValida) {
+            return res.status(401).json({
+                erro: "E-mail ou senha inválidos."
+            });
+        }
+
+        if (!process.env.JWT_SECRET) {
+            console.error("JWT_SECRET não foi configurada.");
+
+            return res.status(500).json({
+                erro: "Erro na configuração de autenticação."
+            });
+        }
+
+        let idCliente = null;
+
+if (usuario.tipo === "cliente") {
+    const [clientes] = await db.query(
+        `SELECT id_cliente
+         FROM clientes
+         WHERE id_usuario = ?`,
+        [usuario.id_usuario]
     );
 
-    if (usuarios.length === 0) {
+    if (clientes.length === 0) {
         return res.status(401).json({
-            erro: "E-mail ou senha inválidos."
+            erro: "Cadastro de cliente não encontrado."
         });
     }
 
-    const usuario = usuarios[0];
-    const senhaValida = await bcrypt.compare(senha, usuario.senha);
-
-    if (!senhaValida) {
-        return res.status(401).json({
-            erro: "E-mail ou senha inválidos."
-        });
-    }
-
-    return res.json({
-        mensagem: "Login realizado com sucesso!",
-        usuario: {
-            id: usuario.id_usuario,
-            nome: usuario.nome,
-            email: usuario.email,
-            perfil: usuario.tipo
-        }
-    });
-} catch (erro) {
-    console.error("Erro ao realizar login:", erro.message);
-
-    return res.status(500).json({
-        erro: "Não foi possível realizar o login."
-    });
+    idCliente = clientes[0].id_cliente;
 }
 
+const dadosToken = {
+    id: usuario.id_usuario,
+    id_cliente: idCliente,
+    email: usuario.email,
+    perfil: usuario.tipo
+};
+
+        const token = jwt.sign(
+            dadosToken,
+            process.env.JWT_SECRET,
+            { expiresIn: "2h" }
+        );
+
+        return res.json({
+    mensagem: "Login realizado com sucesso!",
+    token: token,
+    usuario: {
+        id: usuario.id_usuario,
+        id_cliente: idCliente,
+        nome: usuario.nome,
+        email: usuario.email,
+        perfil: usuario.tipo
+    }
 });
 
-app.get("/api/status-os", async (req, res) => {
+    } catch (erro) {
+        console.error("Erro ao realizar login:", erro.message);
+
+        return res.status(500).json({
+            erro: "Não foi possível realizar o login."
+        });
+    }
+});
+
+app.get("/api/status-os", autenticarToken, async (req, res) => {
     try {
         const [status] = await db.query(
             "SELECT id_status, nome FROM status_os ORDER BY id_status"
@@ -88,7 +162,7 @@ app.get("/api/status-os", async (req, res) => {
     }
 });
 
-app.get("/api/clientes", async (req, res) => {
+app.get("/api/clientes", autenticarToken, async (req, res) => {
     try {
         const [clientes] = await db.query(`
             SELECT
@@ -112,7 +186,7 @@ app.get("/api/clientes", async (req, res) => {
     }
 });
 
-app.get("/api/clientes/:id", async (req, res) => {
+app.get("/api/clientes/:id", autenticarToken, async (req, res) => {
     try {
         const id = Number(req.params.id);
 
@@ -155,11 +229,24 @@ app.get("/api/clientes/:id", async (req, res) => {
 app.post("/api/clientes", async (req, res) => {
     const { nome, email, senha, telefone, endereco } = req.body;
 
-    if (!nome || !email || !senha) {
-        return res.status(400).json({
-            erro: "Nome, email e senha são obrigatórios."
-        });
-    }
+    if (
+    typeof nome !== "string" ||
+    typeof email !== "string" ||
+    typeof senha !== "string" ||
+    !nome.trim() ||
+    !email.trim() ||
+    !senha
+) {
+    return res.status(400).json({
+        erro: "Nome, email e senha são obrigatórios e devem ser válidos."
+    });
+}
+
+if (senha.length < 8) {
+    return res.status(400).json({
+        erro: "A senha deve ter pelo menos 8 caracteres."
+    });
+}
 
     let conexao;
 
@@ -210,7 +297,7 @@ app.post("/api/clientes", async (req, res) => {
     }
 });
 
-app.put("/api/clientes/:id", async (req, res) => {
+app.put("/api/clientes/:id", autenticarToken, async (req, res) => {
     const id = Number(req.params.id);
     const { nome, email, telefone, endereco } = req.body;
 
@@ -275,7 +362,7 @@ app.put("/api/clientes/:id", async (req, res) => {
     }
 });
 
-app.delete("/api/clientes/:id", async (req, res) => {
+app.delete("/api/clientes/:id", autenticarToken, async (req, res) => {
     const id = Number(req.params.id);
 
     if (!Number.isInteger(id) || id <= 0) {
@@ -372,7 +459,7 @@ app.delete("/api/clientes/:id", async (req, res) => {
     }
 });
 
-app.get("/api/tecnicos", async (req, res) => {
+app.get("/api/tecnicos", autenticarToken, async (req, res) => {
     try {
         const [tecnicos] = await db.query(`
             SELECT
@@ -396,7 +483,7 @@ app.get("/api/tecnicos", async (req, res) => {
     }
 });
 
-app.get("/api/tecnicos/:id", async (req, res) => {
+app.get("/api/tecnicos/:id", autenticarToken, async (req, res) => {
     try {
         const id = Number(req.params.id);
 
@@ -436,7 +523,7 @@ app.get("/api/tecnicos/:id", async (req, res) => {
     }
 });
 
-app.put("/api/tecnicos/:id", async (req, res) => {
+app.put("/api/tecnicos/:id", autenticarToken, async (req, res) => {
     const id = Number(req.params.id);
     const { nome, email, especialidade, telefone } = req.body;
 
@@ -501,7 +588,7 @@ app.put("/api/tecnicos/:id", async (req, res) => {
     }
 });
 
-app.post("/api/tecnicos", async (req, res) => {
+app.post("/api/tecnicos", autenticarToken, async (req, res) => {
     const { nome, email, senha, especialidade, telefone } = req.body;
 
     if (!nome || !email || !senha) {
@@ -565,7 +652,7 @@ app.post("/api/tecnicos", async (req, res) => {
     }
 });
 
-app.delete("/api/tecnicos/:id", async (req, res) => {
+app.delete("/api/tecnicos/:id", autenticarToken, async (req, res) => {
     const id = Number(req.params.id);
 
     if (!Number.isInteger(id) || id <= 0) {
@@ -645,7 +732,7 @@ app.delete("/api/tecnicos/:id", async (req, res) => {
     }
 });
 
-app.get("/api/ordens-servico", async (req, res) => {
+app.get("/api/ordens-servico", autenticarToken, async (req, res) => {
     try {
         const [ordens] = await db.query(`
             SELECT
@@ -689,7 +776,7 @@ app.get("/api/ordens-servico", async (req, res) => {
     }
 });
 
-app.get("/api/ordens-servico/:id", async (req, res) => {
+app.get("/api/ordens-servico/:id", autenticarToken, async (req, res) => {
     const id = Number(req.params.id);
 
     if (!Number.isInteger(id) || id <= 0) {
@@ -748,16 +835,121 @@ app.get("/api/ordens-servico/:id", async (req, res) => {
     }
 });
 
-app.post("/api/ordens-servico", async (req, res) => {
+// Cadastrar equipamento de um cliente
+app.post("/api/equipamentos", autenticarToken, async (req, res) => {
+    const {
+        tipo,
+        marca,
+        modelo,
+        numero_serie,
+        id_cliente
+    } = req.body;
+
+    // Identifica o cliente pelo token quando o solicitante é um cliente.
+    const clienteId = req.usuario.perfil === "cliente"
+        ? Number(req.usuario.id_cliente)
+        : Number(id_cliente);
+
+    if (
+        !Number.isInteger(clienteId) ||
+        clienteId <= 0 ||
+        typeof tipo !== "string" ||
+        !tipo.trim() ||
+        typeof marca !== "string" ||
+        !marca.trim() ||
+        typeof modelo !== "string" ||
+        !modelo.trim()
+    ) {
+        return res.status(400).json({
+            erro: "Cliente, tipo, marca e modelo são obrigatórios."
+        });
+    }
+
+    // Somente clientes, técnicos e administradores podem acessar a rota.
+    if (!["cliente", "tecnico", "admin"].includes(req.usuario.perfil)) {
+        return res.status(403).json({
+            erro: "Você não tem permissão para cadastrar equipamentos."
+        });
+    }
+
+    // Clientes só podem cadastrar equipamentos para si mesmos.
+    if (
+        req.usuario.perfil === "cliente" &&
+        clienteId !== Number(req.usuario.id_cliente)
+    ) {
+        return res.status(403).json({
+            erro: "Você só pode cadastrar equipamentos para sua própria conta."
+        });
+    }
+
+    try {
+        const [clientes] = await db.query(
+            "SELECT id_cliente FROM clientes WHERE id_cliente = ?",
+            [clienteId]
+        );
+
+        if (clientes.length === 0) {
+            return res.status(404).json({
+                erro: "Cliente não encontrado."
+            });
+        }
+
+        const [resultado] = await db.query(
+            `INSERT INTO equipamentos (
+                tipo,
+                marca,
+                modelo,
+                numero_serie,
+                id_cliente
+            ) VALUES (?, ?, ?, ?, ?)`,
+            [
+                tipo.trim(),
+                marca.trim(),
+                modelo.trim(),
+                numero_serie?.trim() || null,
+                clienteId
+            ]
+        );
+
+        return res.status(201).json({
+            mensagem: "Equipamento cadastrado com sucesso!",
+            id_equipamento: resultado.insertId
+        });
+
+    } catch (erro) {
+        console.error("Erro ao cadastrar equipamento:", erro.message);
+
+        return res.status(500).json({
+            erro: "Não foi possível cadastrar o equipamento."
+        });
+    }
+});
+
+app.post("/api/ordens-servico", autenticarToken, async (req, res) => {
     const {
         descricao,
         prioridade,
-        id_cliente,
         id_tecnico,
         id_equipamento,
         id_status
     } = req.body;
 
+    // Verifica se o perfil pode cadastrar ordens
+    const perfil = req.usuario.perfil;
+
+    if (!["cliente", "tecnico", "admin"].includes(perfil)) {
+        return res.status(403).json({
+            erro: "Você não tem permissão para cadastrar ordens de serviço."
+        });
+    }
+
+    // O cliente é identificado pelo token.
+    // Para técnicos e administradores, o ID vem da requisição.
+    const id_cliente = perfil === "cliente"
+        ? req.usuario.id_cliente
+        : req.body.id_cliente;
+
+    // Valida os campos obrigatórios
     if (
         typeof descricao !== "string" ||
         descricao.trim() === "" ||
@@ -770,6 +962,7 @@ app.post("/api/ordens-servico", async (req, res) => {
         });
     }
 
+    // Valida a prioridade
     const prioridadeFinal = prioridade || "media";
     const prioridadesValidas = ["baixa", "media", "alta"];
 
@@ -779,6 +972,7 @@ app.post("/api/ordens-servico", async (req, res) => {
         });
     }
 
+    // Converte e valida os IDs
     const clienteId = Number(id_cliente);
     const equipamentoId = Number(id_equipamento);
     const statusId = Number(id_status);
@@ -788,8 +982,10 @@ app.post("/api/ordens-servico", async (req, res) => {
         !Number.isInteger(clienteId) || clienteId <= 0 ||
         !Number.isInteger(equipamentoId) || equipamentoId <= 0 ||
         !Number.isInteger(statusId) || statusId <= 0 ||
-        (tecnicoId !== null &&
-            (!Number.isInteger(tecnicoId) || tecnicoId <= 0))
+        (
+            tecnicoId !== null &&
+            (!Number.isInteger(tecnicoId) || tecnicoId <= 0)
+        )
     ) {
         return res.status(400).json({
             erro: "Um ou mais IDs informados são inválidos."
@@ -802,58 +998,74 @@ app.post("/api/ordens-servico", async (req, res) => {
         conexao = await db.getConnection();
         await conexao.beginTransaction();
 
+        // Verifica se o cliente existe
         const [clientes] = await conexao.query(
-            "SELECT id_cliente FROM clientes WHERE id_cliente = ?",
+            `SELECT id_cliente
+             FROM clientes
+             WHERE id_cliente = ?`,
             [clienteId]
         );
 
         if (clientes.length === 0) {
             await conexao.rollback();
+
             return res.status(400).json({
                 erro: "O cliente informado não existe."
             });
         }
 
+        // Verifica se o equipamento pertence ao cliente
         const [equipamentos] = await conexao.query(
             `SELECT id_equipamento
              FROM equipamentos
-             WHERE id_equipamento = ? AND id_cliente = ?`,
+             WHERE id_equipamento = ?
+               AND id_cliente = ?`,
             [equipamentoId, clienteId]
         );
 
         if (equipamentos.length === 0) {
             await conexao.rollback();
+
             return res.status(400).json({
                 erro: "O equipamento não existe ou não pertence ao cliente informado."
             });
         }
 
+        // Verifica se o status existe
         const [status] = await conexao.query(
-            "SELECT id_status FROM status_os WHERE id_status = ?",
+            `SELECT id_status
+             FROM status_os
+             WHERE id_status = ?`,
             [statusId]
         );
 
         if (status.length === 0) {
             await conexao.rollback();
+
             return res.status(400).json({
                 erro: "O status informado não existe."
             });
         }
 
+        // Verifica se o técnico existe, caso tenha sido informado
         if (tecnicoId !== null) {
             const [tecnicos] = await conexao.query(
-                "SELECT id_tecnico FROM tecnicos WHERE id_tecnico = ?",
+                `SELECT id_tecnico
+                 FROM tecnicos
+                 WHERE id_tecnico = ?`,
                 [tecnicoId]
             );
 
             if (tecnicos.length === 0) {
                 await conexao.rollback();
+
                 return res.status(400).json({
                     erro: "O técnico informado não existe."
                 });
             }
         }
 
+        // Cadastra a ordem de serviço
         const [resultado] = await conexao.query(
             `INSERT INTO ordens_servico (
                 descricao,
@@ -875,20 +1087,25 @@ app.post("/api/ordens-servico", async (req, res) => {
 
         await conexao.commit();
 
-        res.status(201).json({
+        return res.status(201).json({
             mensagem: "Ordem de serviço cadastrada com sucesso!",
             id_os: resultado.insertId
         });
+
     } catch (erro) {
         if (conexao) {
             await conexao.rollback();
         }
 
-        console.error("Erro ao cadastrar ordem:", erro.message);
+        console.error(
+            "Erro ao cadastrar ordem de serviço:",
+            erro.message
+        );
 
-        res.status(500).json({
+        return res.status(500).json({
             erro: "Não foi possível cadastrar a ordem de serviço."
         });
+
     } finally {
         if (conexao) {
             conexao.release();
@@ -896,7 +1113,7 @@ app.post("/api/ordens-servico", async (req, res) => {
     }
 });
 
-app.put("/api/ordens-servico/:id", async (req, res) => {
+app.put("/api/ordens-servico/:id", autenticarToken, async (req, res) => {
     const id = Number(req.params.id);
 
     const {
@@ -1074,7 +1291,7 @@ app.put("/api/ordens-servico/:id", async (req, res) => {
     }
 });
 
-app.delete("/api/ordens-servico/:id", async (req, res) => {
+app.delete("/api/ordens-servico/:id", autenticarToken, async (req, res) => {
     const id = Number(req.params.id);
 
     if (!Number.isInteger(id) || id <= 0) {
@@ -1104,6 +1321,69 @@ app.delete("/api/ordens-servico/:id", async (req, res) => {
 
         res.status(500).json({
             erro: "Não foi possível excluir a ordem de serviço."
+        });
+    }
+});
+
+app.get("/api/equipamentos", autenticarToken, async (req, res) => {
+    try {
+        // Se for cliente, consulta somente os equipamentos dele.
+        if (req.usuario.perfil === "cliente") {
+            const [equipamentos] = await db.query(`
+                SELECT
+                    e.id_equipamento,
+                    e.tipo,
+                    e.marca,
+                    e.modelo,
+                    e.numero_serie,
+                    e.id_cliente,
+                    u.nome AS nome_cliente
+                FROM equipamentos e
+                INNER JOIN clientes c
+                    ON e.id_cliente = c.id_cliente
+                INNER JOIN usuarios u
+                    ON c.id_usuario = u.id_usuario
+                WHERE c.id_cliente = ?
+                ORDER BY e.id_equipamento DESC
+            `, [req.usuario.id_cliente]);
+
+            return res.json(equipamentos);
+        }
+
+        // Administradores e técnicos podem consultar todos.
+        if (
+            req.usuario.perfil !== "admin" &&
+            req.usuario.perfil !== "tecnico"
+        ) {
+            return res.status(403).json({
+                erro: "Você não tem permissão para consultar equipamentos."
+            });
+        }
+
+        const [equipamentos] = await db.query(`
+            SELECT
+                e.id_equipamento,
+                e.tipo,
+                e.marca,
+                e.modelo,
+                e.numero_serie,
+                e.id_cliente,
+                u.nome AS nome_cliente
+            FROM equipamentos e
+            INNER JOIN clientes c
+                ON e.id_cliente = c.id_cliente
+            INNER JOIN usuarios u
+                ON c.id_usuario = u.id_usuario
+            ORDER BY e.id_equipamento DESC
+        `);
+
+        return res.json(equipamentos);
+
+    } catch (erro) {
+        console.error("Erro ao consultar equipamentos:", erro.message);
+
+        return res.status(500).json({
+            erro: "Não foi possível consultar os equipamentos."
         });
     }
 });
