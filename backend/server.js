@@ -1,4 +1,4 @@
-require("dotenv").config();
+require("dotenv").config({ quiet: true });
 
 const express = require("express");
 
@@ -40,7 +40,7 @@ app.use(
 );
 
 // Atribuição de técnicos às Ordens de Serviço
-// A autorização é verificada dentro da rota específica
+// A autorização é verificada na rota específica
 app.use(
     "/api/ordens-servico",
     atribuicoesRoutes
@@ -158,7 +158,14 @@ app.use((erro, req, res, next) => {
     });
 });
 
-// Iniciar servidor
-app.listen(PORT, () => {
-    console.log(`Servidor rodando em http://localhost:${PORT}`);
-});
+// Iniciar servidor somente quando executado diretamente
+if (require.main === module) {
+    app.listen(PORT, () => {
+        console.log(
+            `Servidor rodando em http://localhost:${PORT}`
+        );
+    });
+}
+
+// Disponibilizar o Express para os testes automatizados
+module.exports = app;
