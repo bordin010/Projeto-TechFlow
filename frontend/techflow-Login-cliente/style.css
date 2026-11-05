@@ -1,0 +1,405 @@
+.pagina-login {
+    display: flex;
+    min-height: 100vh;
+}
+
+.apresentacao-login {
+    display: flex;
+    flex-direction: column;
+    width: 48%;
+    padding: 45px 65px;
+    color: white;
+    background:
+        radial-gradient(ellipse at 0 90%, #126d91, transparent 65%), linear-gradient(140deg, #153b61, #0d223a);
+}
+
+.apresentacao-login .marca {
+    color: white;
+}
+
+.texto-login {
+    margin: auto 0;
+    padding: 45px 0;
+}
+
+.texto-login .sobretitulo {
+    color: #81d7e7;
+}
+
+h1 {
+    font-size: clamp(32px, 3.6vw, 52px);
+    line-height: 1.14;
+    letter-spacing: -1.8px;
+    margin: 20px 0;
+}
+
+h1 span {
+    color: #73dbe8;
+}
+
+.texto-login > p:not(.sobretitulo) {
+    max-width: 350px;
+    color: #c0d1e3;
+    font-size: 14px;
+    line-height: 1.8;
+}
+
+.rodape-login {
+    font-size: 9px;
+    letter-spacing: 1.6px;
+    color: #96bbd0;
+}
+
+.ilustracao-login {
+    margin-top: 30px;
+    max-width: 360px;
+}
+
+.linha-ilustracao {
+    display: flex;
+    align-items: center;
+    gap: 13px;
+    padding: 15px;
+    border-radius: 10px;
+    border: 1px solid #ffffff25;
+    background: #ffffff09;
+    transition:
+        transform 0.25s,
+        background 0.25s;
+}
+
+.linha-ilustracao:hover {
+    transform: translateX(5px);
+    background: #ffffff16;
+}
+
+.simbolo-login {
+    color: #8ce3ef;
+    background: #ffffff12;
+    width: 36px;
+    flex-shrink: 0;
+    padding: 6px;
+    text-align: center;
+    border-radius: 8px;
+    font-size: 20px;
+}
+
+.linha-ilustracao strong {
+    font-size: 12px;
+}
+
+.linha-ilustracao small {
+    display: block;
+    font-size: 10px;
+    color: #a8c3d7;
+    margin-top: 4px;
+}
+
+.confirmacao {
+    margin-left: auto;
+    color: #84d9d6;
+}
+
+.conector {
+    width: 1px;
+    height: 15px;
+    background: #ffffff30;
+    margin-left: 33px;
+}
+
+.area-formulario {
+    display: flex;
+    flex-direction: column;
+    width: 52%;
+    background: white;
+    padding: 40px 65px 25px;
+}
+
+.voltar-login {
+    font-size: 12px;
+    color: #607387;
+    text-decoration: none;
+}
+
+.voltar-login:hover {
+    color: #176694;
+}
+
+.caixa-login {
+    width: 100%;
+    max-width: 400px;
+    margin: auto;
+    padding: 30px 0;
+}
+
+.caixa-login h2 {
+    font-size: 30px;
+    letter-spacing: -0.9px;
+    margin: 10px 0;
+}
+
+.caixa-login > div > .texto-apoio {
+    font-size: 13px;
+    color: #607387;
+    line-height: 1.6;
+    margin-bottom: 25px;
+}
+
+.campo-login {
+    margin-bottom: 17px;
+}
+
+.campo-login > label {
+    display: block;
+    font-size: 12px;
+    font-weight: 700;
+    margin-bottom: 7px;
+    color: #203047;
+}
+
+.campo-login input {
+    box-sizing: border-box;
+    width: 100%;
+    min-width: 0;
+    border: 1px solid #cfdbe5;
+    border-radius: 8px;
+    padding: 13px;
+    font-size: 13px;
+    color: #203047;
+    background: white;
+    outline: none;
+    transition:
+        border-color 0.2s,
+        box-shadow 0.2s;
+}
+
+.campo-login input:focus {
+    border-color: #2478b3;
+    box-shadow: 0 0 0 3px #2478b31a;
+}
+
+.campo-login input::placeholder {
+    color: #9aa9b8;
+}
+
+.campo-senha {
+    display: flex;
+    align-items: center;
+    border: 1px solid #cfdbe5;
+    border-radius: 8px;
+    overflow: hidden;
+}
+
+.campo-senha:focus-within {
+    border-color: #2478b3;
+    box-shadow: 0 0 0 3px #2478b31a;
+}
+
+.campo-senha input {
+    border: 0;
+    box-shadow: none;
+}
+
+.campo-senha input:focus {
+    border: 0;
+    box-shadow: none;
+}
+
+.campo-senha button {
+    flex-shrink: 0;
+    border: 0;
+    background: transparent;
+    color: #1c6898;
+    font-size: 11px;
+    padding: 0 12px;
+    cursor: pointer;
+}
+
+.ajuda-login {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 10px;
+    font-size: 10px;
+    margin: 12px 0 22px;
+    color: #607387;
+}
+
+.ajuda-login button {
+    font-size: 10px;
+    color: #176694;
+    border: 0;
+    background: none;
+    cursor: pointer;
+}
+
+.botao-entrar {
+    width: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    cursor: pointer;
+}
+
+.alternar-acesso {
+    text-align: center;
+    font-size: 12px;
+    color: #607387;
+    margin-top: 22px;
+    line-height: 1.8;
+}
+
+.alternar-acesso button {
+    color: #176694;
+    border: 0;
+    background: none;
+    font-weight: 700;
+    font-size: 12px;
+    cursor: pointer;
+}
+
+.alternar-acesso button:hover,
+.ajuda-login button:hover {
+    text-decoration: underline;
+}
+
+.mensagem {
+    font-size: 12px;
+    line-height: 1.6;
+    margin-top: 12px;
+    color: #176694;
+}
+
+.mensagem:empty {
+    display: none;
+}
+
+.aviso-login {
+    font-size: 10px;
+    line-height: 1.6;
+    text-align: center;
+    color: #607387;
+    margin-top: 20px;
+}
+
+.copyright-login {
+    text-align: center;
+    color: #607387;
+    font-size: 10px;
+}
+
+@media (max-width: 1050px) {
+    .apresentacao-login,
+    .area-formulario {
+        padding: 35px;
+    }
+
+    .caixa-login {
+        max-width: 420px;
+    }
+}
+
+@media (max-width: 700px) {
+    .pagina-login {
+        flex-direction: column;
+    }
+
+    .apresentacao-login,
+    .area-formulario {
+        width: 100%;
+        box-sizing: border-box;
+        padding: 25px;
+    }
+
+    .texto-login {
+        padding: 22px 0 0;
+    }
+    h1 {
+        font-size: 32px;
+    }
+
+    .ilustracao-login,
+    .rodape-login {
+        display: none;
+    }
+
+    .texto-login > p:not(.sobretitulo) {
+        display: none;
+    }
+    .texto-login h1 br {
+        display: none;
+    }
+    .caixa-login {
+        padding: 30px 0;
+    }
+    .caixa-login h2 {
+        font-size: 27px;
+    }
+    .copyright-login {
+        padding-bottom: 5px;
+    }
+}
+
+[hidden] {
+    display: none !important;
+}
+
+.botao-login-chique {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    width: 100%;
+    padding: 16px 24px;
+    background: linear-gradient(135deg, #1475b9 0%, #0f2c48 100%);
+    color: #ffffff;
+    font-size: 16px;
+    font-weight: 600;
+    letter-spacing: 0.5px;
+    border: none;
+    border-radius: 12px;
+    cursor: pointer;
+    box-shadow: 0 8px 20px rgba(20, 117, 185, 0.25);
+    transition: all 0.3s ease;
+    margin-top: 10px;
+}
+
+.botao-login-chique span {
+    font-size: 20px;
+    transition: transform 0.3s ease;
+}
+
+.botao-login-chique:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 12px 25px rgba(20, 117, 185, 0.4);
+    background: linear-gradient(135deg, #1786d4 0%, #143d66 100%);
+}
+
+.botao-login-chique:hover span {
+    transform: translateX(5px);
+}
+
+.botao-login-chique:active {
+    transform: translateY(0);
+    box-shadow: 0 4px 10px rgba(20, 117, 185, 0.2);
+}
+
+/* Troca entre acesso e cadastro pelos links da própria página. */
+#area-cadastro {
+    display: none;
+}
+
+#area-cadastro:target {
+    display: block;
+}
+
+.caixa-login:has(#area-cadastro:target) #area-entrar {
+    display: none;
+}
+
+.alternar-link {
+    color: #176694;
+    font-weight: 700;
+    cursor: pointer;
+}

@@ -1,6 +1,7 @@
 require("dotenv").config({ quiet: true });
 
 const express = require("express");
+const path = require("path");
 
 const clientesRoutes = require("./routes/clientes");
 const tecnicosRoutes = require("./routes/tecnicos");
@@ -21,6 +22,12 @@ const PORT = 3000;
 // Receber dados em formato JSON
 app.use(express.json());
 
+// Disponibilizar as páginas do front-end
+app.use(
+    "/frontend",
+    express.static(path.join(__dirname, "../frontend"))
+);
+
 // Rota inicial
 app.get("/", (req, res) => {
     res.json({
@@ -30,6 +37,14 @@ app.get("/", (req, res) => {
 
 // Login público
 app.use("/api/auth", autenticacaoRoutes);
+
+// Verificar a sessão de qualquer usuário autenticado
+app.get("/api/auth/sessao", verificarToken, (req, res) => {
+    res.json({
+        mensagem: "Sessão válida.",
+        usuario: req.usuario
+    });
+});
 
 // Gerenciamento de técnicos: somente administrador
 app.use(

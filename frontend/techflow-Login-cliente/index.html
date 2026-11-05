@@ -1,0 +1,188 @@
+<!doctype html>
+
+<html lang="pt-br">
+    <head>
+        <meta charset="utf-8" />
+        <meta content="width=device-width, initial-scale=1.0" name="viewport" />
+        <title>Acesso do Cliente | TechFlow</title>
+        <link href="../assets/globais.css" rel="stylesheet" />
+        <link href="style.css" rel="stylesheet" />
+    </head>
+    <body>
+        <main class="pagina-login">
+            <section class="apresentacao-login">
+                <a class="marca" href="../tela-principal/index.html">
+                    <img alt="Símbolo da TechFlow" src="../img/LOGO.png" width="180" />
+                </a>
+                <div class="texto-login">
+                    <p class="sobretitulo">Seu atendimento começa aqui</p>
+                    <h1>
+                        Sua empresa,
+                        <br />
+                        seus serviços,
+                        <br />
+                        <span>tudo conectado.</span>
+                    </h1>
+                    <p>
+                        Acompanhe suas solicitações, consulte suas ordens de serviço e fique por dentro de
+                        cada atualização.
+                    </p>
+                    <div class="ilustracao-login">
+                        <div class="linha-ilustracao">
+                            <span class="simbolo-login">▤</span>
+                            <div>
+                                <strong>Abra sua solicitação</strong>
+                                <small>Conte o que precisa ser resolvido.</small>
+                            </div>
+                            <span class="confirmacao">✓</span>
+                        </div>
+                        <div class="conector"></div>
+                        <div class="linha-ilustracao">
+                            <span class="simbolo-login">⌁</span>
+                            <div>
+                                <strong>Acompanhe o atendimento</strong>
+                                <small>Veja as atualizações do serviço.</small>
+                            </div>
+                            <span class="confirmacao">✓</span>
+                        </div>
+                        <div class="conector"></div>
+                        <div class="linha-ilustracao">
+                            <span class="simbolo-login">✓</span>
+                            <div>
+                                <strong>Tenha tudo organizado</strong>
+                                <small>Suas informações em um só lugar.</small>
+                            </div>
+                            <span class="confirmacao">✓</span>
+                        </div>
+                    </div>
+                </div>
+                <p class="rodape-login">TECHFLOW • ORGANIZAR. CONECTAR. RESOLVER.</p>
+            </section>
+            <section class="area-formulario">
+                <a class="voltar-login" href="../tela-principal/index.html">← Voltar para o início</a>
+                <div class="caixa-login">
+                    <p class="sobretitulo">Área do cliente</p>
+                    <div id="area-entrar">
+                        <h2>Bem-vindo de volta.</h2>
+                        <p class="texto-apoio">Entre na sua conta para acompanhar seus serviços.</p>
+                        <form action="../techflow-solicitacao/index.html" id="formulario-login" method="get">
+                            <div class="campo-login">
+                                <label for="email-login">E-mail</label>
+                                <input
+                                    autocomplete="email"
+                                    id="email-login"
+                                    placeholder="seuemail@exemplo.com"
+                                    required=""
+                                    type="email"
+                                />
+                            </div>
+                            <div class="campo-login">
+                                <label for="senha-login">Senha</label>
+                                <div class="campo-senha">
+                                    <input
+                                        autocomplete="current-password"
+                                        id="senha-login"
+                                        placeholder="Digite sua senha"
+                                        required=""
+                                        type="password"
+                                    />
+                                </div>
+                            </div>
+                            <div class="ajuda-login">
+                                <span>Acesso exclusivo para clientes</span>
+                                <details class="ajuda-nativa">
+                                    <summary>Precisa de ajuda?</summary>
+                                    <p>Informe seus dados para continuar até o formulário de solicitação.</p>
+                                </details>
+                            </div>
+                            <button class="botao-login-chique" type="submit">
+                                Entrar na minha conta
+                                <span>→</span>
+                            </button>
+                            <p aria-live="polite" class="mensagem" id="mensagem-login" role="status"></p>
+                        </form>
+                        <div class="alternar-acesso">
+                            Ainda não tem uma conta?
+                            <a class="alternar-link" href="#area-cadastro">Cadastre-se</a>
+                        </div>
+                    </div>
+                    <div id="area-cadastro">
+                        <h2>Crie sua conta.</h2>
+                        <p class="texto-apoio">Cadastre-se para começar a utilizar a TechFlow.</p>
+                        <form
+                            action="../techflow-solicitacao/index.html"
+                            id="formulario-cadastro"
+                            method="get"
+                        >
+                            <div class="campo-login">
+                                <label for="nome-cliente">Nome completo</label>
+                                <input
+                                    autocomplete="name"
+                                    id="nome-cliente"
+                                    minlength="3"
+                                    placeholder="Digite seu nome completo"
+                                    required=""
+                                    type="text"
+                                />
+                            </div>
+                            <div class="campo-login">
+                                <label for="email-cadastro">E-mail</label>
+                                <input
+                                    autocomplete="email"
+                                    id="email-cadastro"
+                                    placeholder="seuemail@exemplo.com"
+                                    required=""
+                                    type="email"
+                                />
+                            </div>
+                            <div class="campo-login">
+                                <label for="telefone-cliente">Telefone (opcional)</label>
+                                <input
+                                    autocomplete="tel"
+                                    id="telefone-cliente"
+                                    placeholder="(11) 99999-9999"
+                                    type="tel"
+                                />
+                            </div>
+                            <div class="campo-login">
+                                <label for="senha-cadastro">Crie uma senha</label>
+                                <div class="campo-senha">
+                                    <input
+                                        autocomplete="new-password"
+                                        id="senha-cadastro"
+                                        minlength="8"
+                                        placeholder="Mínimo de 8 caracteres"
+                                        required=""
+                                        type="password"
+                                    />
+                                </div>
+                            </div>
+                            <div class="campo-login">
+                                <label for="confirmar-senha">Confirme sua senha</label>
+                                <div class="campo-senha">
+                                    <input
+                                        autocomplete="new-password"
+                                        id="confirmar-senha"
+                                        minlength="8"
+                                        placeholder="Digite a senha novamente"
+                                        required=""
+                                        type="password"
+                                    />
+                                </div>
+                            </div>
+                            <button class="botao-login-chique" type="submit">
+                                Continuar para a solicitação →
+                            </button>
+                            <p aria-live="polite" class="mensagem" id="mensagem-cadastro" role="status"></p>
+                        </form>
+                        <div class="alternar-acesso">
+                            Já possui uma conta?
+                            <a class="alternar-link" href="#area-entrar">Fazer login</a>
+                        </div>
+                    </div>
+                </div>
+                <p class="copyright-login">© 2026 TechFlow • Gestão de Ordens de Serviço</p>
+            </section>
+        </main>
+    </body>
+</html>
