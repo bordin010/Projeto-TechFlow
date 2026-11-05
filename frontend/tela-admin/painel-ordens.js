@@ -1,58 +1,65 @@
-// =============================================
-// TECHFLOW - ORDENS DE SERVIÇO DO ADMINISTRADOR
-// =============================================
-
-// Consultar OS, clientes e técnicos diretamente da API
+// ======================================
+// TECHFLOW - GERENCIAMENTO DE ORDENS
+// Listagem, atribuição, status,
+// diagnóstico e histórico de alterações
+// ======================================
 
 document.addEventListener("DOMContentLoaded", () => {
 
-    // Elementos do painel
+    // ======================================
+    // ELEMENTOS DO PAINEL
+    // ======================================
+
     const tabela = document.getElementById("lista-ordens");
     const recentes = document.getElementById("ordens-recentes");
     const mensagem = document.getElementById("mensagem");
     const filtro = document.getElementById("filtro-status");
 
-    // Dados recebidos do backend
-    let todasOrdens = [];
+    const token = sessionStorage.getItem("techflow_token");
 
-    // Relacionar IDs com nomes
+    if (!tabela || !recentes || !mensagem || !filtro || !token) {
+        return;
+    }
+
+    let todasOrdens = [];
     let nomesClientes = new Map();
     let nomesTecnicos = new Map();
+    let tecnicosAtivos = [];
 
-    // =============================================
-    // CONSULTAR UMA ROTA DA API
-    // =============================================
+    // ======================================
+    // CONSULTAR API
+    // ======================================
 
-    async function consultarAPI(caminho, token) {
+    async function consultarAPI(caminho, metodo = "GET", corpo = null) {
 
-        const resposta = await fetch(caminho, {
-            method: "GET",
+        const opcoes = {
+            method: metodo,
             headers: {
                 Authorization: `Bearer ${token}`
             },
             cache: "no-store"
-        });
+        };
+
+        if (corpo !== null) {
+            opcoes.headers["Content-Type"] = "application/json";
+            opcoes.body = JSON.stringify(corpo);
+        }
+
+        const resposta = await fetch(caminho, opcoes);
+        const dados = await resposta.json();
 
         if (!resposta.ok) {
             throw new Error(
-                `Erro ao consultar ${caminho}: ${resposta.status}`
-            );
-        }
-
-        const dados = await resposta.json();
-
-        if (!Array.isArray(dados)) {
-            throw new Error(
-                `A rota ${caminho} não retornou uma lista.`
+                dados.mensagem || `Erro na API: ${resposta.status}`
             );
         }
 
         return dados;
     }
 
-    // =============================================
-    // IDENTIFICAR STATUS
-    // =============================================
+    // ======================================
+    // FUNÇÕES AUXILIARES
+    // ======================================
 
     function classeStatus(status) {
 
@@ -70,134 +77,679 @@ document.addEventListener("DOMContentLoaded", () => {
         return "pendente";
     }
 
-    // =============================================
-    // NOME DO CLIENTE
-    // =============================================
+    function osFinalizada(os) {
+        return ["Concluída", "Cancelada"].includes(os.statusOS);
+    }
 
-    function obterNomeCliente(idCliente) {
+    function obterNomeCliente(id) {
 
-        if (idCliente == null) {
+        if (id == null) {
             return "Não informado";
         }
 
-        return nomesClientes.get(String(idCliente)) ||
-            `Cliente #${idCliente}`;
+        return nomesClientes.get(String(id)) || `Cliente #${id}`;
     }
 
-    // =============================================
-    // NOME DO TÉCNICO
-    // =============================================
+    function obterNomeTecnico(id) {
 
-    function obterNomeTecnico(idTecnico) {
-
-        if (idTecnico == null) {
+        if (id == null) {
             return "Não atribuído";
         }
 
-        return nomesTecnicos.get(String(idTecnico)) ||
-            `Técnico #${idTecnico}`;
+        return nomesTecnicos.get(String(id)) || `Técnico #${id}`;
     }
 
-    // =============================================
-    // CRIAR CÉLULA COM SEGURANÇA
-    // =============================================
-
-    function criarCelula(linha, conteudo) {
+    function criarCelula(linha, texto) {
 
         const celula = document.createElement("td");
-
-        celula.textContent = conteudo;
+        celula.textContent = texto ?? "Não informado";
 
         linha.appendChild(celula);
 
         return celula;
     }
 
-    // =============================================
-    // ADICIONAR STATUS NA TABELA
-    // =============================================
-
     function adicionarStatus(linha, status) {
 
         const celula = document.createElement("td");
-
         const etiqueta = document.createElement("span");
 
-        etiqueta.className =
-            `situacao ${classeStatus(status)}`;
-
-        etiqueta.textContent =
-            status || "Não informado";
+        etiqueta.className = `situacao ${classeStatus(status)}`;
+        etiqueta.textContent = status || "Não informado";
 
         celula.appendChild(etiqueta);
-
         linha.appendChild(celula);
     }
 
-    // =============================================
-    // MOSTRAR DETALHES DA OS
-    // =============================================
+    function criarBotao(texto, acao) {
+
+        const botao = document.createElement("button");
+
+        botao.type = "button";
+        botao.className = "botao-detalhes";
+        botao.textContent = texto;
+
+        botao.addEventListener("click", acao);
+
+        return botao;
+    }
+
+    function formatarData(data) {
+
+        if (!data) {
+            return "Data não informada";
+        }
+
+        // Datas SQL sem fuso são interpretadas como locais.
+        const texto = String(data);
+        const dataConvertida = new Date(
+            texto.includes("T")
+                ? texto
+                : texto.replace(" ", "T")
+        );
+
+        if (Number.isNaN(dataConvertida.getTime())) {
+            return texto;
+        }
+
+        return dataConvertida.toLocaleString("pt-BR", {
+            day: "2-digit",
+            month: "2-digit",
+            year: "numeric",
+            hour: "2-digit",
+            minute: "2-digit"
+        });
+    }
+
+    // ======================================
+    // MOSTRAR DETALHES
+    // ======================================
 
     function mostrarDetalhes(os) {
 
-        const detalhes = [
+        alert([
             `Ordem de Serviço #${os.idOS}`,
             "",
             `Cliente: ${obterNomeCliente(os.idCliente)}`,
             `Equipamento: #${os.idEquipamento ?? "Não informado"}`,
             `Técnico: ${obterNomeTecnico(os.idTecnico)}`,
-            `Status: ${os.statusOS ?? "Não informado"}`,
+            `Status: ${os.statusOS || "Não informado"}`,
             "",
-            `Problema: ${os.descricaoProblema ?? "Não informado"}`
-        ];
-
-        alert(detalhes.join("\n"));
+            `Problema: ${os.descricaoProblema || "Não informado"}`,
+            "",
+            `Diagnóstico: ${os.diagnostico || "Não informado"}`,
+            `Solução: ${os.solucaoAplicada || "Não informada"}`
+        ].join("\n"));
     }
 
-    // =============================================
-    // ATUALIZAR TABELA PRINCIPAL
-    // =============================================
+    // ======================================
+    // JANELA PADRÃO COM SELEÇÃO
+    // ======================================
 
-    function atualizarTabela() {
+    function criarJanelaSelecao(id, tituloTexto, textoCampo, textoSalvar) {
 
-        if (!tabela) {
+        const janela = document.createElement("dialog");
+        janela.id = id;
+
+        const titulo = document.createElement("h2");
+        titulo.textContent = tituloTexto;
+
+        const descricao = document.createElement("p");
+
+        const formulario = document.createElement("form");
+
+        const label = document.createElement("label");
+        label.textContent = textoCampo;
+
+        const selecionar = document.createElement("select");
+        selecionar.id = `${id}-selecao`;
+        selecionar.required = true;
+
+        label.htmlFor = selecionar.id;
+
+        const acoes = document.createElement("div");
+        acoes.className = "acoes-editor";
+
+        const cancelar = criarBotao("Cancelar", () => janela.close());
+
+        const salvar = document.createElement("button");
+        salvar.type = "submit";
+        salvar.className = "botao";
+        salvar.textContent = textoSalvar;
+
+        acoes.appendChild(cancelar);
+        acoes.appendChild(salvar);
+
+        formulario.appendChild(label);
+        formulario.appendChild(selecionar);
+        formulario.appendChild(acoes);
+
+        janela.appendChild(titulo);
+        janela.appendChild(descricao);
+        janela.appendChild(formulario);
+
+        document.body.appendChild(janela);
+
+        return {
+            janela,
+            titulo,
+            descricao,
+            formulario,
+            selecionar,
+            salvar
+        };
+    }
+
+    function adicionarOpcao(select, valor, texto) {
+
+        const opcao = document.createElement("option");
+
+        opcao.value = valor;
+        opcao.textContent = texto;
+
+        select.appendChild(opcao);
+
+        return opcao;
+    }
+
+    // ======================================
+    // ATRIBUIÇÃO DE TÉCNICOS
+    // ======================================
+
+    const atribuicao = criarJanelaSelecao(
+        "janela-atribuir-tecnico",
+        "Atribuir técnico",
+        "Técnico responsável",
+        "Salvar atribuição"
+    );
+
+    let ordemAtribuicao = null;
+
+    function abrirAtribuicao(os) {
+
+        if (osFinalizada(os)) {
+            mensagem.textContent = "Esta OS já está finalizada.";
             return;
         }
 
-        tabela.replaceChildren();
+        if (tecnicosAtivos.length === 0) {
+            mensagem.textContent = "Nenhum técnico ativo disponível.";
+            return;
+        }
 
-        const statusSelecionado = filtro
-            ? filtro.value
-            : "todos";
+        ordemAtribuicao = os;
 
-        const ordensFiltradas = todasOrdens.filter((os) => {
+        atribuicao.titulo.textContent = os.idTecnico == null
+            ? "Atribuir técnico"
+            : "Alterar técnico responsável";
 
-            const classe = classeStatus(os.statusOS);
+        atribuicao.descricao.textContent =
+            `OS #${os.idOS} - ${obterNomeCliente(os.idCliente)}`;
 
-            return (
-                statusSelecionado === "todos" ||
-                classe === statusSelecionado
+        atribuicao.selecionar.replaceChildren();
+
+        const inicial = adicionarOpcao(
+            atribuicao.selecionar,
+            "",
+            "Selecione um técnico"
+        );
+        inicial.disabled = true;
+
+        tecnicosAtivos.forEach((tecnico) => {
+
+            adicionarOpcao(
+                atribuicao.selecionar,
+                String(tecnico.idUsuario),
+                tecnico.nomeCompleto
             );
         });
 
-        // Nenhuma ordem encontrada
-        if (ordensFiltradas.length === 0) {
+        const atualAtivo = tecnicosAtivos.some(
+            tecnico =>
+                String(tecnico.idUsuario) === String(os.idTecnico)
+        );
 
-            const linha = document.createElement("tr");
+        atribuicao.selecionar.value = atualAtivo
+            ? String(os.idTecnico)
+            : "";
 
-            const celula = document.createElement("td");
+        atribuicao.janela.showModal();
+    }
 
-            celula.colSpan = 6;
+    atribuicao.formulario.addEventListener("submit", async (evento) => {
 
-            celula.textContent =
-                "Nenhuma ordem de serviço encontrada.";
+        evento.preventDefault();
 
-            linha.appendChild(celula);
-
-            tabela.appendChild(linha);
+        if (!ordemAtribuicao) {
+            return;
         }
 
-        // Construir linhas da tabela
+        const idTecnico = Number(atribuicao.selecionar.value);
+
+        if (!Number.isSafeInteger(idTecnico) || idTecnico <= 0) {
+            alert("Selecione um técnico válido.");
+            return;
+        }
+
+        if (Number(ordemAtribuicao.idTecnico) === idTecnico) {
+            alert("Este técnico já está atribuído à OS.");
+            return;
+        }
+
+        atribuicao.salvar.disabled = true;
+        atribuicao.salvar.textContent = "Salvando...";
+
+        try {
+
+            const idOS = ordemAtribuicao.idOS;
+
+            await consultarAPI(
+                `/api/ordens-servico/${idOS}/atribuir`,
+                "PATCH",
+                { idTecnico }
+            );
+
+            atribuicao.janela.close();
+
+            await carregarDados();
+
+            mensagem.textContent =
+                `Técnico atribuído com sucesso à OS #${idOS}!`;
+
+        } catch (erro) {
+
+            console.error("Erro ao atribuir técnico:", erro);
+            alert(erro.message);
+
+        } finally {
+
+            atribuicao.salvar.disabled = false;
+            atribuicao.salvar.textContent = "Salvar atribuição";
+        }
+    });
+
+    // ======================================
+    // ALTERAÇÃO DE STATUS
+    // ======================================
+
+    const statusJanela = criarJanelaSelecao(
+        "janela-alterar-status",
+        "Alterar status da OS",
+        "Novo status",
+        "Salvar status"
+    );
+
+    let ordemStatus = null;
+
+    function abrirAlteracaoStatus(os) {
+
+        if (osFinalizada(os)) {
+            mensagem.textContent = "Esta OS já está finalizada.";
+            return;
+        }
+
+        ordemStatus = os;
+
+        statusJanela.descricao.textContent =
+            `OS #${os.idOS} - Status atual: ${os.statusOS}`;
+
+        statusJanela.selecionar.replaceChildren();
+
+        const inicial = adicionarOpcao(
+            statusJanela.selecionar,
+            "",
+            "Selecione o novo status"
+        );
+        inicial.disabled = true;
+
+        const statusPermitidos = [
+            "Em análise",
+            "Em andamento",
+            "Aguardando peça"
+        ];
+
+        const possuiDiagnostico =
+            typeof os.diagnostico === "string" &&
+            os.diagnostico.trim().length > 0;
+
+        const possuiSolucao =
+            typeof os.solucaoAplicada === "string" &&
+            os.solucaoAplicada.trim().length > 0;
+
+        if (possuiDiagnostico && possuiSolucao) {
+            statusPermitidos.push("Concluída");
+        }
+
+        statusPermitidos.forEach((status) => {
+
+            if (status !== os.statusOS) {
+                adicionarOpcao(
+                    statusJanela.selecionar,
+                    status,
+                    status
+                );
+            }
+        });
+
+        statusJanela.selecionar.value = "";
+        statusJanela.janela.showModal();
+    }
+
+    statusJanela.formulario.addEventListener("submit", async (evento) => {
+
+        evento.preventDefault();
+
+        if (!ordemStatus) {
+            return;
+        }
+
+        const novoStatus = statusJanela.selecionar.value;
+
+        if (!novoStatus || novoStatus === ordemStatus.statusOS) {
+            alert("Selecione um novo status válido.");
+            return;
+        }
+
+        statusJanela.salvar.disabled = true;
+        statusJanela.salvar.textContent = "Salvando...";
+
+        try {
+
+            const idOS = ordemStatus.idOS;
+
+            await consultarAPI(
+                `/api/ordens-servico/${idOS}/status`,
+                "PATCH",
+                { novoStatus }
+            );
+
+            statusJanela.janela.close();
+
+            await carregarDados();
+
+            mensagem.textContent =
+                `Status da OS #${idOS} atualizado para ${novoStatus}!`;
+
+        } catch (erro) {
+
+            console.error("Erro ao alterar status:", erro);
+            alert(erro.message);
+
+        } finally {
+
+            statusJanela.salvar.disabled = false;
+            statusJanela.salvar.textContent = "Salvar status";
+        }
+    });
+
+    // ======================================
+    // DIAGNÓSTICO E SOLUÇÃO
+    // ======================================
+
+    const janelaDiagnostico = document.createElement("dialog");
+    janelaDiagnostico.id = "janela-diagnostico";
+
+    const tituloDiagnostico = document.createElement("h2");
+    tituloDiagnostico.textContent = "Registrar diagnóstico e solução";
+
+    const descricaoDiagnostico = document.createElement("p");
+    const formularioDiagnostico = document.createElement("form");
+
+    function criarCampoTexto(id, rotulo, placeholder) {
+
+        const label = document.createElement("label");
+        label.htmlFor = id;
+        label.textContent = rotulo;
+
+        const campo = document.createElement("textarea");
+        campo.id = id;
+        campo.rows = 4;
+        campo.required = true;
+        campo.placeholder = placeholder;
+
+        formularioDiagnostico.appendChild(label);
+        formularioDiagnostico.appendChild(campo);
+
+        return campo;
+    }
+
+    const campoDiagnostico = criarCampoTexto(
+        "campo-diagnostico",
+        "Diagnóstico do equipamento",
+        "Descreva o problema identificado."
+    );
+
+    const campoSolucao = criarCampoTexto(
+        "campo-solucao",
+        "Solução aplicada",
+        "Descreva os procedimentos realizados."
+    );
+
+    const acoesDiagnostico = document.createElement("div");
+    acoesDiagnostico.className = "acoes-editor";
+
+    const cancelarDiagnostico = criarBotao(
+        "Cancelar",
+        () => janelaDiagnostico.close()
+    );
+
+    const salvarDiagnostico = document.createElement("button");
+    salvarDiagnostico.type = "submit";
+    salvarDiagnostico.className = "botao";
+    salvarDiagnostico.textContent = "Salvar diagnóstico";
+
+    acoesDiagnostico.appendChild(cancelarDiagnostico);
+    acoesDiagnostico.appendChild(salvarDiagnostico);
+
+    formularioDiagnostico.appendChild(acoesDiagnostico);
+
+    janelaDiagnostico.appendChild(tituloDiagnostico);
+    janelaDiagnostico.appendChild(descricaoDiagnostico);
+    janelaDiagnostico.appendChild(formularioDiagnostico);
+
+    document.body.appendChild(janelaDiagnostico);
+
+    let ordemDiagnostico = null;
+
+    function abrirDiagnostico(os) {
+
+        if (osFinalizada(os)) {
+            mensagem.textContent = "Esta OS já está finalizada.";
+            return;
+        }
+
+        ordemDiagnostico = os;
+
+        descricaoDiagnostico.textContent =
+            `OS #${os.idOS} - ${obterNomeCliente(os.idCliente)}`;
+
+        campoDiagnostico.value = os.diagnostico || "";
+        campoSolucao.value = os.solucaoAplicada || "";
+
+        janelaDiagnostico.showModal();
+    }
+
+    formularioDiagnostico.addEventListener("submit", async (evento) => {
+
+        evento.preventDefault();
+
+        if (!ordemDiagnostico) {
+            return;
+        }
+
+        const diagnostico = campoDiagnostico.value.trim();
+        const solucaoAplicada = campoSolucao.value.trim();
+
+        if (!diagnostico || !solucaoAplicada) {
+            alert("Informe o diagnóstico e a solução aplicada.");
+            return;
+        }
+
+        salvarDiagnostico.disabled = true;
+        salvarDiagnostico.textContent = "Salvando...";
+
+        try {
+
+            const idOS = ordemDiagnostico.idOS;
+
+            await consultarAPI(
+                `/api/ordens-servico/${idOS}/diagnostico`,
+                "PATCH",
+                { diagnostico, solucaoAplicada }
+            );
+
+            janelaDiagnostico.close();
+
+            await carregarDados();
+
+            mensagem.textContent =
+                `Diagnóstico e solução da OS #${idOS} registrados com sucesso!`;
+
+        } catch (erro) {
+
+            console.error("Erro ao salvar diagnóstico:", erro);
+            alert(erro.message);
+
+        } finally {
+
+            salvarDiagnostico.disabled = false;
+            salvarDiagnostico.textContent = "Salvar diagnóstico";
+        }
+    });
+
+    // ======================================
+    // NOVO: JANELA DE HISTÓRICO
+    // ======================================
+
+    const janelaHistorico = document.createElement("dialog");
+    janelaHistorico.id = "janela-historico-os";
+
+    const tituloHistorico = document.createElement("h2");
+    tituloHistorico.textContent = "Histórico da Ordem de Serviço";
+
+    const descricaoHistorico = document.createElement("p");
+
+    const listaHistorico = document.createElement("ol");
+    listaHistorico.style.paddingLeft = "22px";
+
+    const acoesHistorico = document.createElement("div");
+    acoesHistorico.className = "acoes-editor";
+
+    const fecharHistorico = criarBotao(
+        "Fechar",
+        () => janelaHistorico.close()
+    );
+
+    acoesHistorico.appendChild(fecharHistorico);
+
+    janelaHistorico.appendChild(tituloHistorico);
+    janelaHistorico.appendChild(descricaoHistorico);
+    janelaHistorico.appendChild(listaHistorico);
+    janelaHistorico.appendChild(acoesHistorico);
+
+    document.body.appendChild(janelaHistorico);
+
+    // ======================================
+    // NOVO: CONSULTAR HISTÓRICO DA OS
+    // ======================================
+
+    async function abrirHistorico(os) {
+
+        tituloHistorico.textContent =
+            `Histórico da OS #${os.idOS}`;
+
+        descricaoHistorico.textContent =
+            `Cliente: ${obterNomeCliente(os.idCliente)}`;
+
+        listaHistorico.replaceChildren();
+
+        const carregando = document.createElement("li");
+        carregando.textContent = "Carregando histórico...";
+
+        listaHistorico.appendChild(carregando);
+
+        fecharHistorico.disabled = false;
+        janelaHistorico.showModal();
+
+        try {
+
+            // Consultar o histórico real da OS no MySQL
+            const historico = await consultarAPI(
+                `/api/ordens-servico/${os.idOS}/historico`
+            );
+
+            if (!Array.isArray(historico)) {
+                throw new Error("Histórico retornado em formato inválido.");
+            }
+
+            listaHistorico.replaceChildren();
+
+            if (historico.length === 0) {
+
+                const item = document.createElement("li");
+                item.textContent = "Nenhuma alteração registrada.";
+
+                listaHistorico.appendChild(item);
+                return;
+            }
+
+            // Mostrar cada movimentação registrada
+            historico.forEach((registro) => {
+
+                const item = document.createElement("li");
+                item.style.marginBottom = "18px";
+
+                const statusNovo = document.createElement("strong");
+                statusNovo.textContent =
+                    registro.statusNovo || "Não informado";
+
+                const statusAnterior = document.createElement("p");
+
+                statusAnterior.textContent =
+                    registro.statusAnterior == null
+                        ? "Criação da Ordem de Serviço"
+                        : `Status anterior: ${registro.statusAnterior}`;
+
+                const data = document.createElement("small");
+
+                data.textContent =
+                    `Data: ${formatarData(registro.dataAlteracao)}`;
+
+                item.appendChild(statusNovo);
+                item.appendChild(statusAnterior);
+                item.appendChild(data);
+
+                listaHistorico.appendChild(item);
+            });
+
+        } catch (erro) {
+
+            console.error("Erro ao carregar histórico:", erro);
+
+            listaHistorico.replaceChildren();
+
+            const item = document.createElement("li");
+            item.textContent =
+                `Não foi possível carregar o histórico: ${erro.message}`;
+
+            listaHistorico.appendChild(item);
+        }
+    }
+
+    // ======================================
+    // TABELA DE ORDENS
+    // ======================================
+
+    function atualizarTabela() {
+
+        tabela.replaceChildren();
+
+        const ordensFiltradas = todasOrdens.filter((os) => {
+
+            return filtro.value === "todos" ||
+                classeStatus(os.statusOS) === filtro.value;
+        });
+
         ordensFiltradas.forEach((os) => {
 
             const linha = document.createElement("tr");
@@ -205,223 +757,168 @@ document.addEventListener("DOMContentLoaded", () => {
             linha.className =
                 `linha-os ${classeStatus(os.statusOS)}`;
 
-            // Número da OS
             criarCelula(linha, `#${os.idOS}`);
+            criarCelula(linha, obterNomeCliente(os.idCliente));
 
-            // Nome real do cliente
-            criarCelula(
-                linha,
-                obterNomeCliente(os.idCliente)
-            );
-
-            // Descrição do problema
             criarCelula(
                 linha,
                 os.descricaoProblema || "Não informado"
             );
 
-            // Nome real do técnico
             criarCelula(
                 linha,
                 obterNomeTecnico(os.idTecnico)
             );
 
-            // Status
             adicionarStatus(linha, os.statusOS);
 
-            // Botão de detalhes
-            const celulaAcao = document.createElement("td");
+            const celulaAcoes = document.createElement("td");
+            celulaAcoes.className = "acoes-tabela";
 
-            const botao = document.createElement("button");
+            // Detalhes
+            celulaAcoes.appendChild(
+                criarBotao("Detalhes", () => {
+                    mostrarDetalhes(os);
+                })
+            );
 
-            botao.type = "button";
+            // NOVO: Histórico, inclusive de OS finalizadas
+            celulaAcoes.appendChild(
+                criarBotao("Histórico", () => {
+                    abrirHistorico(os);
+                })
+            );
 
-            botao.className = "botao-detalhes";
+            // Ações disponíveis apenas para OS abertas
+            if (!osFinalizada(os)) {
 
-            botao.textContent = "Detalhes";
+                celulaAcoes.appendChild(
+                    criarBotao(
+                        os.idTecnico == null
+                            ? "Atribuir"
+                            : "Alterar técnico",
+                        () => abrirAtribuicao(os)
+                    )
+                );
 
-            botao.addEventListener("click", () => {
-                mostrarDetalhes(os);
-            });
+                celulaAcoes.appendChild(
+                    criarBotao("Alterar status", () => {
+                        abrirAlteracaoStatus(os);
+                    })
+                );
 
-            celulaAcao.appendChild(botao);
+                celulaAcoes.appendChild(
+                    criarBotao("Registrar diagnóstico", () => {
+                        abrirDiagnostico(os);
+                    })
+                );
+            }
 
-            linha.appendChild(celulaAcao);
-
+            linha.appendChild(celulaAcoes);
             tabela.appendChild(linha);
         });
 
-        // Atualizar mensagem de quantidade
-        if (mensagem) {
+        mensagem.textContent =
+            `${ordensFiltradas.length} ordem(ns) encontrada(s).`;
 
-            mensagem.textContent =
-                `${ordensFiltradas.length} ordem(ns) encontrada(s).`;
+        if (ordensFiltradas.length === 0) {
+
+            const linha = document.createElement("tr");
+            const celula = document.createElement("td");
+
+            celula.colSpan = 6;
+            celula.textContent = "Nenhuma ordem encontrada.";
+
+            linha.appendChild(celula);
+            tabela.appendChild(linha);
         }
     }
 
-    // =============================================
-    // ATUALIZAR ORDENS RECENTES
-    // =============================================
+    // ======================================
+    // ORDENS RECENTES
+    // ======================================
 
     function atualizarRecentes() {
 
-        if (!recentes) {
-            return;
-        }
-
         recentes.replaceChildren();
 
-        // A API já retorna as ordens por ID decrescente
-        const ultimasOrdens = todasOrdens.slice(0, 3);
-
-        if (ultimasOrdens.length === 0) {
-
-            const linha = document.createElement("tr");
-
-            const celula = document.createElement("td");
-
-            celula.colSpan = 3;
-
-            celula.textContent =
-                "Nenhuma ordem registrada.";
-
-            linha.appendChild(celula);
-
-            recentes.appendChild(linha);
-
-            return;
-        }
+        const ultimasOrdens = [...todasOrdens]
+            .sort((a, b) => Number(b.idOS) - Number(a.idOS))
+            .slice(0, 3);
 
         ultimasOrdens.forEach((os) => {
 
             const linha = document.createElement("tr");
 
-            // Número da OS
             criarCelula(linha, `#${os.idOS}`);
-
-            // Nome do cliente
-            criarCelula(
-                linha,
-                obterNomeCliente(os.idCliente)
-            );
-
-            // Status da OS
+            criarCelula(linha, obterNomeCliente(os.idCliente));
             adicionarStatus(linha, os.statusOS);
 
             recentes.appendChild(linha);
         });
     }
 
-    // =============================================
-    // CARREGAR DADOS REAIS
-    // =============================================
+    // ======================================
+    // CARREGAR DADOS REAIS DO MYSQL
+    // ======================================
 
     async function carregarDados() {
 
-        const token =
-            sessionStorage.getItem("techflow_token");
+        const [ordens, clientes, tecnicos] = await Promise.all([
+            consultarAPI("/api/ordens-servico"),
+            consultarAPI("/api/clientes"),
+            consultarAPI("/api/tecnicos")
+        ]);
 
-        if (!token) {
-            return;
+        if (
+            !Array.isArray(ordens) ||
+            !Array.isArray(clientes) ||
+            !Array.isArray(tecnicos)
+        ) {
+            throw new Error("A API retornou dados inválidos.");
         }
 
-        try {
+        todasOrdens = ordens;
 
-            if (mensagem) {
-                mensagem.textContent =
-                    "Carregando ordens de serviço...";
-            }
-
-            // Consultar as três rotas
-            const [
-                ordens,
-                clientes,
-                tecnicos
-            ] = await Promise.all([
-
-                consultarAPI(
-                    "/api/ordens-servico",
-                    token
-                ),
-
-                consultarAPI(
-                    "/api/clientes",
-                    token
-                ),
-
-                consultarAPI(
-                    "/api/tecnicos",
-                    token
-                )
-            ]);
-
-            // Guardar as ordens recebidas
-            todasOrdens = ordens;
-
-            // Criar relacionamento entre ID e nome do cliente
-            nomesClientes = new Map(
-                clientes.map((cliente) => [
-                    String(cliente.idUsuario),
-                    cliente.nomeCompleto
-                ])
-            );
-
-            // Criar relacionamento entre ID e nome do técnico
-            nomesTecnicos = new Map(
-                tecnicos.map((tecnico) => [
-                    String(tecnico.idUsuario),
-                    tecnico.nomeCompleto
-                ])
-            );
-
-            // Atualizar as tabelas
-            atualizarTabela();
-
-            atualizarRecentes();
-
-            console.log(
-                "Ordens, clientes e técnicos carregados com sucesso!"
-            );
-
-        } catch (erro) {
-
-            console.error(
-                "Erro ao carregar dados do painel:",
-                erro
-            );
-
-            if (mensagem) {
-                mensagem.textContent =
-                    "Não foi possível carregar as ordens de serviço.";
-            }
-
-            // Não manter os registros demonstrativos
-            if (tabela) {
-                tabela.replaceChildren();
-            }
-
-            if (recentes) {
-                recentes.replaceChildren();
-            }
-        }
-    }
-
-    // =============================================
-    // FILTRO DE STATUS
-    // =============================================
-
-    if (filtro) {
-
-        filtro.addEventListener(
-            "change",
-            atualizarTabela
+        nomesClientes = new Map(
+            clientes.map((cliente) => [
+                String(cliente.idUsuario),
+                cliente.nomeCompleto
+            ])
         );
+
+        nomesTecnicos = new Map(
+            tecnicos.map((tecnico) => [
+                String(tecnico.idUsuario),
+                tecnico.nomeCompleto
+            ])
+        );
+
+        tecnicosAtivos = tecnicos.filter((tecnico) => {
+
+            return (
+                tecnico.ativo === 1 ||
+                tecnico.ativo === true ||
+                tecnico.ativo === "1"
+            );
+        });
+
+        atualizarTabela();
+        atualizarRecentes();
     }
 
-    // =============================================
-    // INICIAR CONSULTA
-    // =============================================
+    // ======================================
+    // INICIALIZAÇÃO
+    // ======================================
 
-    carregarDados();
+    filtro.addEventListener("change", atualizarTabela);
+
+    carregarDados().catch((erro) => {
+
+        console.error("Erro ao carregar ordens:", erro);
+
+        mensagem.textContent =
+            "Não foi possível carregar as ordens de serviço.";
+    });
 
 });

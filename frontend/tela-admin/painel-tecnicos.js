@@ -1,6 +1,6 @@
-
 // ======================================
 // TECHFLOW - GERENCIAMENTO DE TÉCNICOS
+// Cadastro, listagem, edição e situação
 // ======================================
 
 document.addEventListener("DOMContentLoaded", () => {
@@ -9,23 +9,29 @@ document.addEventListener("DOMContentLoaded", () => {
     const lista = document.getElementById("lista-tecnicos");
     const mensagem = document.getElementById("mensagem-tecnico");
 
-    const botao = formulario?.querySelector('button[type="submit"]');
+    const botaoCadastrar = formulario?.querySelector(
+        'button[type="submit"]'
+    );
+
     const token = sessionStorage.getItem("techflow_token");
 
-    if (!formulario || !lista || !mensagem || !botao || !token) {
+    if (!formulario || !lista || !mensagem || !botaoCadastrar || !token) {
         return;
     }
 
-    botao.disabled = false;
-    botao.removeAttribute("title");
+    botaoCadastrar.disabled = false;
+    botaoCadastrar.removeAttribute("title");
 
-    // Exibir mensagens no painel
+    // ======================================
+    // MENSAGENS
+    // ======================================
+
     function mostrarMensagem(texto) {
         mensagem.textContent = texto;
     }
 
     // ======================================
-    // VALIDAR CPF
+    // VALIDAÇÕES
     // ======================================
 
     function cpfValido(cpf) {
@@ -62,18 +68,10 @@ document.addEventListener("DOMContentLoaded", () => {
         return true;
     }
 
-    // ======================================
-    // VALIDAR E-MAIL
-    // ======================================
-
     function emailValido(email) {
         return typeof email === "string" &&
             /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email.trim());
     }
-
-    // ======================================
-    // VALIDAR SENHA
-    // ======================================
 
     function senhaValida(senha) {
         return typeof senha === "string" &&
@@ -84,60 +82,255 @@ document.addEventListener("DOMContentLoaded", () => {
     }
 
     // ======================================
+    // REQUISIÇÕES PARA A API
+    // ======================================
+
+    async function consultarAPI(caminho, metodo = "GET", corpo = null) {
+
+        const opcoes = {
+            method: metodo,
+            headers: {
+                Authorization: `Bearer ${token}`
+            },
+            cache: "no-store"
+        };
+
+        if (corpo !== null) {
+            opcoes.headers["Content-Type"] = "application/json";
+            opcoes.body = JSON.stringify(corpo);
+        }
+
+        const resposta = await fetch(caminho, opcoes);
+
+        const dados = await resposta.json();
+
+        if (!resposta.ok) {
+            throw new Error(
+                dados.mensagem || "Erro ao consultar a API."
+            );
+        }
+
+        return dados;
+    }
+
+    // ======================================
+    // JANELA DE EDIÇÃO
+    // ======================================
+
+    const janela = document.createElement("dialog");
+    janela.id = "janela-editar-tecnico";
+
+    const tituloJanela = document.createElement("h2");
+    tituloJanela.textContent = "Editar técnico";
+
+    const formularioEdicao = document.createElement("form");
+    formularioEdicao.id = "formulario-editar-tecnico";
+
+    function criarCampo(rotulo, id, tipo, obrigatorio = false) {
+
+        const label = document.createElement("label");
+        label.htmlFor = id;
+        label.textContent = rotulo;
+
+        const input = document.createElement("input");
+        input.id = id;
+        input.type = tipo;
+        input.required = obrigatorio;
+
+        formularioEdicao.appendChild(label);
+        formularioEdicao.appendChild(input);
+
+        return input;
+    }
+
+    const campoNome = criarCampo(
+        "Nome completo", "editar-nome-tecnico", "text", true
+    );
+
+    const campoEmail = criarCampo(
+        "E-mail", "editar-email-tecnico", "email", true
+    );
+
+    const campoTelefone = criarCampo(
+        "Telefone", "editar-telefone-tecnico", "tel"
+    );
+
+    const campoEndereco = criarCampo(
+        "Endereço", "editar-endereco-tecnico", "text"
+    );
+
+    const acoes = document.createElement("div");
+    acoes.className = "acoes-editor";
+
+    const botaoCancelar = document.createElement("button");
+    botaoCancelar.type = "button";
+    botaoCancelar.className = "botao-detalhes";
+    botaoCancelar.textContent = "Cancelar";
+
+    const botaoSalvar = document.createElement("button");
+    botaoSalvar.type = "submit";
+    botaoSalvar.className = "botao";
+    botaoSalvar.textContent = "Salvar alterações";
+
+    acoes.appendChild(botaoCancelar);
+    acoes.appendChild(botaoSalvar);
+
+    formularioEdicao.appendChild(acoes);
+
+    janela.appendChild(tituloJanela);
+    janela.appendChild(formularioEdicao);
+
+    document.body.appendChild(janela);
+
+    let idTecnicoEdicao = null;
+
+    botaoCancelar.addEventListener("click", () => {
+        janela.close();
+    });
+
+    function editarTecnico(tecnico) {
+
+        idTecnicoEdicao = tecnico.idUsuario;
+
+        campoNome.value = tecnico.nomeCompleto || "";
+        campoEmail.value = tecnico.email || "";
+        campoTelefone.value = tecnico.telefone || "";
+        campoEndereco.value = tecnico.endereco || "";
+
+        janela.showModal();
+    }
+
+    // ======================================
     // LISTAR TÉCNICOS
     // ======================================
 
     async function carregarTecnicos() {
 
+        const tecnicos = await consultarAPI("/api/tecnicos");
+
+        if (!Array.isArray(tecnicos)) {
+            throw new Error("Resposta inválida da API.");
+        }
+
+        lista.replaceChildren();
+
+        tecnicos.forEach((tecnico) => {
+
+            const item = document.createElement("li");
+
+            // Nome do técnico
+            const nome = document.createElement("span");
+            nome.textContent = tecnico.nomeCompleto;
+
+            // Situação do cadastro
+            const ativo = (
+                tecnico.ativo === 1 ||
+                tecnico.ativo === true ||
+                tecnico.ativo === "1"
+            );
+
+            const situacao = document.createElement("span");
+            situacao.textContent = ativo ? "Ativo" : "Inativo";
+
+            situacao.style.fontWeight = "bold";
+            situacao.style.color = ativo
+                ? "#278b7e"
+                : "#a33e4c";
+
+            // Botão Editar
+            const botaoEditar = document.createElement("button");
+            botaoEditar.type = "button";
+            botaoEditar.className = "botao-detalhes";
+            botaoEditar.textContent = "Editar";
+
+            botaoEditar.addEventListener("click", () => {
+                editarTecnico(tecnico);
+            });
+
+            // Botão Desativar / Reativar
+            const botaoSituacao = document.createElement("button");
+            botaoSituacao.type = "button";
+
+            botaoSituacao.className = ativo
+                ? "botao-excluir"
+                : "botao-detalhes";
+
+            botaoSituacao.textContent = ativo
+                ? "Desativar"
+                : "Reativar";
+
+            botaoSituacao.addEventListener("click", async () => {
+                await alterarSituacao(tecnico, ativo, botaoSituacao);
+            });
+
+            // Adicionar elementos à lista
+            item.appendChild(nome);
+            item.appendChild(situacao);
+            item.appendChild(botaoEditar);
+            item.appendChild(botaoSituacao);
+
+            lista.appendChild(item);
+        });
+
+        if (tecnicos.length === 0) {
+
+            const item = document.createElement("li");
+            item.textContent = "Nenhum técnico cadastrado.";
+
+            lista.appendChild(item);
+        }
+
+        mostrarMensagem(
+            `${tecnicos.length} técnico(s) cadastrado(s) no sistema.`
+        );
+    }
+
+    // ======================================
+    // DESATIVAR OU REATIVAR TÉCNICO
+    // ======================================
+
+    async function alterarSituacao(tecnico, ativo, botaoSituacao) {
+
+        const acao = ativo ? "desativar" : "reativar";
+
+        const pergunta = ativo
+            ? `Deseja desativar o técnico ${tecnico.nomeCompleto}?`
+            : `Deseja reativar o técnico ${tecnico.nomeCompleto}?`;
+
+        // Pedir confirmação antes de alterar
+        if (!confirm(pergunta)) {
+            return;
+        }
+
+        botaoSituacao.disabled = true;
+        botaoSituacao.textContent = "Aguarde...";
+
         try {
 
-            const resposta = await fetch("/api/tecnicos", {
-                method: "GET",
-                headers: {
-                    Authorization: `Bearer ${token}`
-                },
-                cache: "no-store"
-            });
+            await consultarAPI(
+                `/api/tecnicos/${tecnico.idUsuario}/${acao}`,
+                "PATCH"
+            );
 
-            if (!resposta.ok) {
-                throw new Error("Erro ao consultar técnicos.");
-            }
-
-            const tecnicos = await resposta.json();
-
-            if (!Array.isArray(tecnicos)) {
-                throw new Error("Resposta inválida da API.");
-            }
-
-            lista.replaceChildren();
-
-            tecnicos.forEach((tecnico) => {
-
-                const item = document.createElement("li");
-
-                item.textContent = tecnico.nomeCompleto;
-
-                lista.appendChild(item);
-            });
-
-            if (tecnicos.length === 0) {
-
-                const item = document.createElement("li");
-
-                item.textContent = "Nenhum técnico cadastrado.";
-
-                lista.appendChild(item);
-            }
+            // Recarregar a lista atualizada
+            await carregarTecnicos();
 
             mostrarMensagem(
-                `${tecnicos.length} técnico(s) cadastrado(s) no sistema.`
+                ativo
+                    ? "Técnico desativado com sucesso!"
+                    : "Técnico reativado com sucesso!"
             );
 
         } catch (erro) {
 
-            console.error("Erro ao carregar técnicos:", erro);
+            console.error("Erro ao alterar situação:", erro);
 
-            mostrarMensagem("Não foi possível carregar os técnicos.");
+            mostrarMensagem(erro.message);
+
+            botaoSituacao.disabled = false;
+            botaoSituacao.textContent = ativo
+                ? "Desativar"
+                : "Reativar";
         }
     }
 
@@ -167,68 +360,42 @@ document.addEventListener("DOMContentLoaded", () => {
         const senha = document
             .getElementById("senha-tecnico").value;
 
-        // Validar nome
         if (!nomeCompleto) {
-            mostrarMensagem("Informe o nome completo do técnico.");
+            mostrarMensagem("Informe o nome completo.");
             return;
         }
 
-        // Validar CPF
         if (!cpfValido(cpf)) {
-            mostrarMensagem(
-                "CPF inválido. Informe um CPF com 11 dígitos e verificadores corretos."
-            );
+            mostrarMensagem("CPF inválido.");
             return;
         }
 
-        // Validar e-mail
         if (!emailValido(email)) {
-            mostrarMensagem(
-                "E-mail inválido. Verifique o endereço informado."
-            );
+            mostrarMensagem("E-mail inválido.");
             return;
         }
 
-        // Validar senha
         if (!senhaValida(senha)) {
             mostrarMensagem(
-                "Senha inválida. Use pelo menos 8 caracteres, " +
+                "A senha deve ter pelo menos 8 caracteres, " +
                 "com letra maiúscula, minúscula e número."
             );
             return;
         }
 
-        botao.disabled = true;
-        botao.textContent = "Cadastrando...";
-
-        mostrarMensagem("Salvando técnico no MySQL...");
+        botaoCadastrar.disabled = true;
+        botaoCadastrar.textContent = "Cadastrando...";
 
         try {
 
-            const resposta = await fetch("/api/tecnicos", {
-                method: "POST",
-                headers: {
-                    "Content-Type": "application/json",
-                    Authorization: `Bearer ${token}`
-                },
-                body: JSON.stringify({
-                    nomeCompleto,
-                    cpf: cpf.replace(/\D/g, ""),
-                    email,
-                    telefone,
-                    endereco,
-                    senha
-                })
+            await consultarAPI("/api/tecnicos", "POST", {
+                nomeCompleto,
+                cpf: cpf.replace(/\D/g, ""),
+                email,
+                telefone,
+                endereco,
+                senha
             });
-
-            const dados = await resposta.json();
-
-            if (!resposta.ok) {
-                mostrarMensagem(
-                    dados.mensagem || "Erro ao cadastrar técnico."
-                );
-                return;
-            }
 
             formulario.reset();
 
@@ -240,18 +407,84 @@ document.addEventListener("DOMContentLoaded", () => {
 
             console.error("Erro ao cadastrar técnico:", erro);
 
-            mostrarMensagem(
-                "Erro de conexão. Não foi possível cadastrar o técnico."
-            );
+            mostrarMensagem(erro.message);
 
         } finally {
 
-            botao.disabled = false;
-            botao.textContent = "Cadastrar técnico";
+            botaoCadastrar.disabled = false;
+            botaoCadastrar.textContent = "Cadastrar técnico";
         }
     });
 
-    // Carregar técnicos ao abrir o painel
-    carregarTecnicos();
+    // ======================================
+    // SALVAR EDIÇÃO
+    // ======================================
+
+    formularioEdicao.addEventListener("submit", async (evento) => {
+
+        evento.preventDefault();
+
+        if (idTecnicoEdicao === null) {
+            return;
+        }
+
+        const nomeCompleto = campoNome.value.trim();
+        const email = campoEmail.value.trim();
+        const telefone = campoTelefone.value.trim();
+        const endereco = campoEndereco.value.trim();
+
+        if (!nomeCompleto) {
+            alert("Informe o nome completo.");
+            return;
+        }
+
+        if (!emailValido(email)) {
+            alert("Informe um e-mail válido.");
+            return;
+        }
+
+        botaoSalvar.disabled = true;
+        botaoSalvar.textContent = "Salvando...";
+
+        try {
+
+            await consultarAPI(
+                `/api/tecnicos/${idTecnicoEdicao}`,
+                "PUT",
+                {
+                    nomeCompleto,
+                    email,
+                    telefone,
+                    endereco
+                }
+            );
+
+            janela.close();
+
+            await carregarTecnicos();
+
+            mostrarMensagem("Técnico atualizado com sucesso!");
+
+        } catch (erro) {
+
+            console.error("Erro ao editar técnico:", erro);
+
+            alert(erro.message);
+
+        } finally {
+
+            botaoSalvar.disabled = false;
+            botaoSalvar.textContent = "Salvar alterações";
+        }
+    });
+
+    // ======================================
+    // CARREGAR DADOS INICIAIS
+    // ======================================
+
+    carregarTecnicos().catch((erro) => {
+        console.error("Erro ao carregar técnicos:", erro);
+        mostrarMensagem(erro.message);
+    });
 
 });
