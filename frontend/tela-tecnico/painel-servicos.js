@@ -726,6 +726,60 @@ document.addEventListener("DOMContentLoaded", () => {
         return celula;
     }
 
+// ======================================
+// CALCULAR TEMPO DECORRIDO DA OS
+// ======================================
+
+function calcularTempoDecorrido(os) {
+
+    if (!os.dataAbertura || !os.dataConclusao) {
+        return "Não informado";
+    }
+
+    const abertura = new Date(
+        String(os.dataAbertura).replace(" ", "T")
+    );
+
+    const conclusao = new Date(
+        String(os.dataConclusao).replace(" ", "T")
+    );
+
+    if (
+        Number.isNaN(abertura.getTime()) ||
+        Number.isNaN(conclusao.getTime())
+    ) {
+        return "Data inválida";
+    }
+
+    const minutos = Math.floor(
+        (conclusao.getTime() - abertura.getTime()) / 60000
+    );
+
+    if (minutos < 0) {
+        return "Data inválida";
+    }
+
+    const dias = Math.floor(minutos / 1440);
+    const horas = Math.floor((minutos % 1440) / 60);
+    const minutosRestantes = minutos % 60;
+
+    const partes = [];
+
+    if (dias > 0) {
+        partes.push(`${dias}d`);
+    }
+
+    if (horas > 0) {
+        partes.push(`${horas}h`);
+    }
+
+    if (minutosRestantes > 0 || partes.length === 0) {
+        partes.push(`${minutosRestantes}min`);
+    }
+
+    return partes.join(" ");
+}
+
     // ======================================
     // HISTÓRICO DE CONCLUÍDOS
     // ======================================
@@ -776,7 +830,7 @@ criarCelula(
     ].filter(Boolean).join(" ")
 );
 
-            criarCelula(linha, "Não informado");
+            criarCelula(linha, calcularTempoDecorrido(os));
 
             const statusCelula = document.createElement("td");
             const situacao = document.createElement("span");
@@ -797,29 +851,24 @@ criarCelula(
 
     function limparLogisticaDemonstrativa() {
 
-        const logistica = document.getElementById(
-            "consulta-logistica"
-        );
+    const logistica = document.getElementById(
+        "consulta-logistica"
+    );
 
-        if (!logistica) {
-            return;
-        }
-
-        logistica.querySelectorAll(".item-consulta").forEach(
-            (item) => item.remove()
-        );
-
-        if (!logistica.querySelector("[data-aviso-logistica]")) {
-
-            const aviso = document.createElement("p");
-            aviso.dataset.avisoLogistica = "true";
-
-            aviso.textContent =
-                "Endereços dos atendimentos serão integrados posteriormente.";
-
-            logistica.appendChild(aviso);
-        }
+    if (!logistica) {
+        return;
     }
+
+    // Remover os registros demonstrativos antigos
+    logistica.querySelectorAll(".item-consulta").forEach(
+        (item) => item.remove()
+    );
+
+    // Remover qualquer aviso antigo
+    logistica.querySelectorAll("[data-aviso-logistica]").forEach(
+        (item) => item.remove()
+    );
+}
 
     // ======================================
     // CARREGAR ORDENS REAIS

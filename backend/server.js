@@ -12,6 +12,10 @@ const historicoOSRoutes = require("./routes/historicoOS");
 const equipamentosRoutes = require("./routes/equipamentos");
 const categoriasRoutes = require("./routes/categorias");
 const tiposServicoRoutes = require("./routes/tiposServico");
+const agendamentosRoutes = require("./routes/agendamentos");
+
+// Nova rota de ocorrências
+const ocorrenciasRoutes = require("./routes/ocorrencias");
 
 const verificarToken = require("./middlewares/verificarToken");
 const verificarPerfil = require("./middlewares/verificarPerfil");
@@ -74,6 +78,28 @@ app.use(
     ordensServicoRoutes
 );
 
+// ==============================================
+// GERENCIAMENTO DE OCORRÊNCIAS
+// Usuário precisa estar autenticado
+// Permissões específicas verificadas nas rotas
+// ==============================================
+
+app.use(
+    "/api/ocorrencias",
+    verificarToken,
+    ocorrenciasRoutes
+);
+
+// ==============================================
+// AGENDAMENTOS DOS ATENDIMENTOS
+// ==============================================
+
+app.use(
+    "/api/agendamentos",
+    verificarToken,
+    agendamentosRoutes
+);
+
 // Gerenciamento de equipamentos
 app.use(
     "/api/equipamentos",
@@ -99,6 +125,7 @@ app.use(
 app.use(
     "/api/clientes",
     (req, res, next) => {
+
         // Permitir cadastro público
         if (req.method === "POST" && req.path === "/") {
             return next();
@@ -107,6 +134,7 @@ app.use(
         verificarToken(req, res, next);
     },
     (req, res, next) => {
+
         // Listar clientes: somente administrador
         if (req.method === "GET" && req.path === "/") {
             return verificarPerfil("administrador")(req, res, next);
@@ -125,6 +153,7 @@ app.use(
             ["GET", "PUT"].includes(req.method) &&
             /^\/\d+\/?$/.test(req.path)
         ) {
+
             const idCliente = Number(req.path.split("/")[1]);
 
             if (
@@ -156,6 +185,7 @@ app.use((req, res) => {
 
 // Tratamento de erros
 app.use((erro, req, res, next) => {
+
     console.error("Erro no servidor:", erro.message);
 
     if (

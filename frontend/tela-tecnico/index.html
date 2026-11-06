@@ -13,6 +13,10 @@
 
     <!-- Carregar serviços reais do MySQL -->
 <script src="painel-servicos.js" defer></script>
+<script src="perfil-tecnico.js" defer></script>
+<script src="ocorrencias-tecnico.js" defer></script>
+<script src="logistica-tecnico.js" defer></script>
+<script src="calendario-tecnico.js" defer></script>
 
 </head>
 
@@ -495,29 +499,50 @@
     </section>
 
     <!-- JANELA DE PERFIL -->
-    <section aria-labelledby="titulo-consulta-perfil"
-             class="janela-nativa"
-             id="consulta-perfil"
-             popover="auto"
-             role="dialog">
+<section aria-labelledby="titulo-consulta-perfil"
+         class="janela-nativa"
+         id="consulta-perfil"
+         popover="auto"
+         role="dialog">
 
-        <div class="topo-janela-nativa">
-            <h2 id="titulo-consulta-perfil">
-                Área técnica
-            </h2>
+    <div class="topo-janela-nativa">
+        <h2 id="titulo-consulta-perfil">
+            Meu perfil
+        </h2>
 
-            <button aria-label="Fechar"
-                    class="fechar-janela"
-                    popovertarget="consulta-perfil"
-                    popovertargetaction="hide"
-                    type="button">
-                ×
-            </button>
-        </div>
+        <button aria-label="Fechar"
+                class="fechar-janela"
+                popovertarget="consulta-perfil"
+                popovertargetaction="hide"
+                type="button">
+            ×
+        </button>
+    </div>
 
-        <p>Visualização dos atendimentos da equipe técnica.</p>
-        <p>Profissionais: Rafael Santos e Camila Lima.</p>
-    </section>
+    <div class="dados-perfil">
+        <dl>
+            <dt>Nome completo</dt>
+            <dd id="perfil-nome">Carregando...</dd>
+
+            <dt>E-mail</dt>
+            <dd id="perfil-email">Carregando...</dd>
+
+            <dt>Telefone</dt>
+            <dd id="perfil-telefone">Carregando...</dd>
+
+            <dt>Endereço</dt>
+            <dd id="perfil-endereco">Carregando...</dd>
+
+            <dt>Tipo de usuário</dt>
+            <dd id="perfil-tipo">Carregando...</dd>
+
+            <dt>Situação da conta</dt>
+            <dd id="perfil-situacao">Carregando...</dd>
+        </dl>
+    </div>
+
+    <div aria-live="polite" id="perfil-mensagem"></div>
+</section>
 
     <!-- JANELA DE LOGÍSTICA -->
     <section aria-labelledby="titulo-consulta-logistica"

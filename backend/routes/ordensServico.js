@@ -55,6 +55,7 @@ const consultaCompletaOS = `
     SELECT
         os.*,
         cliente.nomeCompleto AS nomeCliente,
+        cliente.endereco AS enderecoCliente,
         equipamento.nomeEquipamento AS nomeEquipamento,
         equipamento.marca AS marcaEquipamento,
         equipamento.modelo AS modeloEquipamento
